@@ -3,11 +3,14 @@
 const fs = require(`fs`);
 
 const {
+  ExitCode
+} = require(`../../const`);
+
+const {
   getRandomInt,
   shuffleArray,
 } = require(`../../utils`);
 
-const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
 const MAX_DESCRIPTION_LENGTH = 5;
 
@@ -55,6 +58,11 @@ const OfferType = {
   SALE: `sale`,
 };
 
+const OfferRestrict = {
+  MIN: 1,
+  MAX: 1000,
+};
+
 const SumRestrict = {
   MIN: 1000,
   MAX: 100000,
@@ -82,7 +90,13 @@ module.exports = {
   name: `--generate`,
   run(args) {
     const [count] = args;
-    const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
+
+    if (count > OfferRestrict.MAX) {
+      console.info(`Не больше 1000 объявлений`);
+      process.exit(ExitCode.success);
+    }
+
+    const countOffer = Number.parseInt(count, 10) || OfferRestrict.MIN;
     const content = JSON.stringify(generateOffers(countOffer));
 
     fs.writeFile(FILE_NAME, content, (err) => {
