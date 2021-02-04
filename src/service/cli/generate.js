@@ -77,12 +77,12 @@ const getPictureFileName = (number) => number > 10 ? `item${number}.jpg` : `item
 
 const generateOffers = (count) => (
   Array(count).fill({}).map(() => ({
-    type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
+    type: Object.keys(OfferType)[getRandomInt(0, Object.keys(OfferType).length - 1)],
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
-    description: shuffleArray(DESCRIPTIONS).slice(1, MAX_DESCRIPTION_LENGTH).join(` `),
+    description: shuffleArray(DESCRIPTIONS).slice(0, getRandomInt(1, MAX_DESCRIPTION_LENGTH)).join(` `),
     sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
-    category: [CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)]],
+    category: shuffleArray(CATEGORIES).slice(0, getRandomInt(1, CATEGORIES.length - 1)),
   }))
 );
 
@@ -91,12 +91,14 @@ module.exports = {
   run(args) {
     const [count] = args;
 
-    if (count > OfferRestrict.MAX) {
+    const countNumber = Number.parseInt(count, 10) || OfferRestrict.MIN;
+
+    if (countNumber > OfferRestrict.MAX) {
       console.error(`Не больше 1000 объявлений`);
       process.exit(ExitCode.success);
     }
 
-    const countOffer = Number.parseInt(count, 10) || OfferRestrict.MIN;
+    const countOffer = countNumber > OfferRestrict.MIN ? countNumber : OfferRestrict.MIN;
     const content = JSON.stringify(generateOffers(countOffer));
 
     fs.writeFile(FILE_NAME, content, (err) => {
