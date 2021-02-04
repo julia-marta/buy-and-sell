@@ -92,7 +92,7 @@ module.exports = {
     const [count] = args;
 
     if (count > OfferRestrict.MAX) {
-      console.info(`Не больше 1000 объявлений`);
+      console.error(`Не больше 1000 объявлений`);
       process.exit(ExitCode.success);
     }
 
@@ -101,10 +101,12 @@ module.exports = {
 
     fs.writeFile(FILE_NAME, content, (err) => {
       if (err) {
-        return console.error(`Can't write data to file...`);
+        console.error(`Can't write data to file...`);
+        process.exit(ExitCode.error);
       }
 
-      return console.log(`Operation success. File created.`);
+      console.log(`Operation success. File created.`);
+      process.exit(ExitCode.success);
     });
   }
 };
