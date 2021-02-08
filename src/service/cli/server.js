@@ -8,7 +8,8 @@ const DEFAULT_PORT = 3000;
 const FILENAME = `mocks.json`;
 
 const {
-  HttpCode
+  HttpCode,
+  ExitCode
 } = require(`../../const`);
 
 const PortRestrict = {
@@ -68,7 +69,8 @@ module.exports = {
     .listen(port)
     .on(`listening`, (err) => {
       if (err) {
-        return console.error(chalk.red(`Ошибка при создании сервера`), err);
+        console.error(chalk.red(`Ошибка при создании сервера`), err);
+        process.exit(ExitCode.error);
       }
 
       return console.info(chalk.green(`Ожидаю соединений на ${port}`));
