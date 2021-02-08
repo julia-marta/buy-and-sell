@@ -6,7 +6,8 @@
   "scripts": {
     "test": "npm run eslint",
     "eslint": "eslint --ext .js src/",
-    "start": "node ./src/service/service.js"
+    "start": "node ./src/service/service.js",
+    "server": "nodemon ./src/service/service.js --server"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,8 @@
   "homepage": "https://github.com/julia-marta/1237807-buy-and-sell-3#readme",
   "devDependencies": {
     "eslint": "7.19.0",
-    "eslint-config-htmlacademy": "0.6.0"
+    "eslint-config-htmlacademy": "0.6.0",
+    "nodemon": "2.0.7"
   },
   "dependencies": {
     "chalk": "4.1.0"
