@@ -7,7 +7,8 @@
     "test": "npm run eslint",
     "eslint": "eslint --ext .js src/",
     "start": "node ./src/service/service.js",
-    "server": "nodemon ./src/service/service.js --server"
+    "server": "nodemon ./src/service/service.js --server",
+    "start-front-server": "node ./src/express/index.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
     "nodemon": "2.0.7"
   },
   "dependencies": {
-    "chalk": "4.1.0"
+    "chalk": "4.1.0",
+    "express": "4.17.1"
   }
 }
