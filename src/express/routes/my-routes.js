@@ -3,7 +3,7 @@
 const {Router} = require(`express`);
 const myRouter = new Router();
 
-myRouter.get(`/`, (req, res) => res.send(`/my`));
-myRouter.get(`/comments`, (req, res) => res.send(`/my/comments`));
+myRouter.get(`/`, (req, res) => res.render(`my/my-tickets`));
+myRouter.get(`/comments`, (req, res) => res.render(`my/comments`));
 
 module.exports = myRouter;
