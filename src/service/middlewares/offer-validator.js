@@ -8,10 +8,11 @@ module.exports = (req, res, next) => {
   const newOffer = req.body;
   const keys = Object.keys(newOffer);
   const keysExists = offerKeys.every((key) => keys.includes(key));
+  const keysValid = keys.every((key) => offerKeys.includes(key));
 
-  if (!keysExists) {
-    res.status(HttpCode.BAD_REQUEST).send(`Bad request`);
+  if (!keysExists || !keysValid) {
+    return res.status(HttpCode.BAD_REQUEST).send(`Bad request`);
   }
 
-  next();
+  return next();
 };

@@ -4,15 +4,14 @@ const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
 const offerValidator = require(`../middlewares/offer-validator`);
 const offerExists = require(`../middlewares/offer-exists`);
-const commentValidator = require(`../middlewares/comment-validator`);
 
 const route = new Router();
 
-module.exports = (app, offerService, commentService) => {
+module.exports = (app, offerService, commentsRouter) => {
   app.use(`/offers`, route);
 
-  route.get(`/`, async (req, res) => {
-    const offers = await offerService.findAll();
+  route.get(`/`, (req, res) => {
+    const offers = offerService.findAll();
 
     return res.status(HttpCode.OK).json(offers);
   });
@@ -48,29 +47,5 @@ module.exports = (app, offerService, commentService) => {
     return res.status(HttpCode.OK).json(deletedOffer);
   });
 
-  route.get(`/:offerId/comments`, offerExists(offerService), (req, res) => {
-    const {offer} = res.locals;
-    const comments = commentService.findAll(offer);
-
-    return res.status(HttpCode.OK).json(comments);
-  });
-
-  route.delete(`/:offerId/comments/:commentId`, offerExists(offerService), (req, res) => {
-    const {offer} = res.locals;
-    const {commentId} = req.params;
-    const deletedComment = commentService.drop(offer, commentId);
-
-    if (!deletedComment) {
-      return res.status(HttpCode.NOT_FOUND).send(`Comment with ${commentId} not found`);
-    }
-
-    return res.status(HttpCode.OK).json(deletedComment);
-  });
-
-  route.post(`/:offerId/comments`, [offerExists(offerService), commentValidator], (req, res) => {
-    const {offer} = res.locals;
-    const comment = commentService.create(offer, req.body);
-
-    return res.status(HttpCode.CREATED).json(comment);
-  });
+  route.use(`/:offerId/comments`, offerExists(offerService), commentsRouter);
 };

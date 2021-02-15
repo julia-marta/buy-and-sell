@@ -8,10 +8,11 @@ module.exports = (req, res, next) => {
   const newComment = req.body;
   const keys = Object.keys(newComment);
   const keysExists = commentKeys.every((key) => keys.includes(key));
+  const keysValid = keys.every((key) => commentKeys.includes(key));
 
-  if (!keysExists) {
-    res.status(HttpCode.BAD_REQUEST).send(`Bad request`);
+  if (!keysExists || !keysValid) {
+    return res.status(HttpCode.BAD_REQUEST).send(`Bad request`);
   }
 
-  next();
+  return next();
 };

@@ -17,8 +17,12 @@ module.exports = (app, service) => {
     }
 
     const searchResults = service.findAll(query);
-    const searchStatus = searchResults.length > 0 ? HttpCode.OK : HttpCode.NOT_FOUND;
 
-    res.status(searchStatus).json(searchResults);
+    if (searchResults.length <= 0) {
+      res.status(HttpCode.OK).send(`No results`);
+      return;
+    }
+
+    res.status(HttpCode.OK).json(searchResults);
   });
 };

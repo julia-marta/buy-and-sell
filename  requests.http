@@ -28,6 +28,22 @@ Content-Type: application/json
 
 ###
 
+# Добавление нового объявления с лишним полем
+POST http://localhost:3000/api/offers HTTP/1.1
+Content-Type: application/json
+
+{
+  "category": ["Цветы"],
+  "description": "Новое объявление",
+  "picture": "item01.jpg",
+  "title": "Новый заголовок",
+  "sum": 5000,
+  "type": "offer",
+  "comments": "test"
+}
+
+###
+
 # Редактирование объявления
 PUT http://localhost:3000/api/offers/KUBZUy HTTP/1.1
 Content-Type: application/json
@@ -68,5 +84,16 @@ Content-Type: application/json
 
 ###
 
+# Добавление нового комментария с лишним полем
+POST http://localhost:3000/api/offers/NjtnaC/comments HTTP/1.1
+Content-Type: application/json
+
+{
+  "text": "Это новый комментарий",
+  "id": "test"
+}
+
+###
+
 # Поиск объявлений
-GET http://localhost:3000/api/search?query=фильм HTTP/1.1
+GET http://localhost:3000/api/search?query=цветы HTTP/1.1
