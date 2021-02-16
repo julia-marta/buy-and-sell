@@ -16,13 +16,6 @@ module.exports = (app, service) => {
       return;
     }
 
-    const searchResults = service.findAll(query);
-
-    if (searchResults.length <= 0) {
-      res.status(HttpCode.OK).send(`No results`);
-      return;
-    }
-
-    res.status(HttpCode.OK).json(searchResults);
+    res.status(HttpCode.OK).json(service.findAll(query));
   });
 };
