@@ -5,9 +5,9 @@ const {HttpCode} = require(`../../const`);
 const offerValidator = require(`../middlewares/offer-validator`);
 const offerExists = require(`../middlewares/offer-exists`);
 
-const route = new Router();
-
 module.exports = (app, offerService, commentsRouter) => {
+  const route = new Router();
+
   app.use(`/offers`, route);
 
   route.get(`/`, (req, res) => {
