@@ -9,14 +9,14 @@ const getMockData = require(`../lib/get-mock-data`);
 
 const {CategoryService, OfferService, CommentService, SearchService} = require(`../data-service`);
 
-module.exports = async () => {
+module.exports = async (logger) => {
   const app = new Router();
 
   const mockData = await getMockData();
-  const commentsRouter = comments(new CommentService());
+  const commentsRouter = comments(new CommentService(), logger);
   categories(app, new CategoryService(mockData));
-  offers(app, new OfferService(mockData), commentsRouter);
-  search(app, new SearchService(mockData));
+  offers(app, new OfferService(mockData), commentsRouter, logger);
+  search(app, new SearchService(mockData), logger);
 
   return app;
 };
