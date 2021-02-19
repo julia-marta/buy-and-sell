@@ -3,9 +3,13 @@
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
 
-const route = new Router();
+module.exports = (serviceLocator) => {
+  const route = new Router();
 
-module.exports = (app, service) => {
+  const app = serviceLocator.get(`app`);
+  const service = serviceLocator.get(`searchService`);
+  const logger = serviceLocator.get(`logger`);
+
   app.use(`/search`, route);
 
   route.get(`/`, (req, res) => {
@@ -13,9 +17,11 @@ module.exports = (app, service) => {
 
     if (!query) {
       res.status(HttpCode.BAD_REQUEST).json([]);
-      return;
+      return logger.error(`Invalid query.`);
     }
 
-    res.status(HttpCode.OK).json(service.findAll(query));
+    return res.status(HttpCode.OK).json(service.findAll(query));
   });
+
+  return route;
 };

@@ -3,13 +3,18 @@
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
 
-const route = new Router();
+module.exports = (serviceLocator) => {
+  const route = new Router();
 
-module.exports = (app, service) => {
+  const app = serviceLocator.get(`app`);
+  const service = serviceLocator.get(`categoryService`);
+
   app.use(`/categories`, route);
 
   route.get(`/`, (req, res) => {
     const categories = service.findAll();
     res.status(HttpCode.OK).json(categories);
   });
+
+  return route;
 };

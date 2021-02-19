@@ -5,47 +5,56 @@ const {HttpCode} = require(`../../const`);
 const offerValidator = require(`../middlewares/offer-validator`);
 const offerExists = require(`../middlewares/offer-exists`);
 
-const route = new Router();
+module.exports = (serviceLocator) => {
+  const route = new Router();
 
-module.exports = (app, offerService, commentsRouter) => {
+  const app = serviceLocator.get(`app`);
+  const service = serviceLocator.get(`offerService`);
+  const logger = serviceLocator.get(`logger`);
+
+  const isOfferExist = offerExists(service, logger);
+  const isOfferValid = offerValidator(logger);
+
   app.use(`/offers`, route);
 
   route.get(`/`, (req, res) => {
-    const offers = offerService.findAll();
+    const offers = service.findAll();
 
     return res.status(HttpCode.OK).json(offers);
   });
 
-  route.get(`/:offerId`, offerExists(offerService), (req, res) => {
+  route.get(`/:offerId`, isOfferExist, (req, res) => {
     const {offer} = res.locals;
 
     return res.status(HttpCode.OK).json(offer);
   });
 
-  route.post(`/`, offerValidator, (req, res) => {
-    const offer = offerService.create(req.body);
+  route.post(`/`, isOfferValid, (req, res) => {
+    const offer = service.create(req.body);
 
     return res.status(HttpCode.CREATED).json(offer);
   });
 
-  route.put(`/:offerId`, [offerExists(offerService), offerValidator], (req, res) => {
+  route.put(`/:offerId`, [isOfferExist, isOfferValid], (req, res) => {
     const {offerId} = req.params;
 
-    const updatedOffer = offerService.update(offerId, req.body);
+    const updatedOffer = service.update(offerId, req.body);
 
     return res.status(HttpCode.OK).json(updatedOffer);
   });
 
   route.delete(`/:offerId`, (req, res) => {
     const {offerId} = req.params;
-    const deletedOffer = offerService.drop(offerId);
+    const deletedOffer = service.drop(offerId);
 
     if (!deletedOffer) {
-      return res.status(HttpCode.NOT_FOUND).send(`Offer with ${offerId} not found`);
+      res.status(HttpCode.NOT_FOUND).send(`Offer with ${offerId} not found`);
+      return logger.error(`Offer not found: ${offerId}`);
     }
 
     return res.status(HttpCode.OK).json(deletedOffer);
   });
 
-  route.use(`/:offerId/comments`, offerExists(offerService), commentsRouter);
+  return route;
+
 };
