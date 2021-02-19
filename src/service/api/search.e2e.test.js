@@ -5,13 +5,21 @@ const request = require(`supertest`);
 
 const search = require(`./search`);
 const DataService = require(`../data-service/search`);
+const serviceLocator = require(`../lib/service-locator`)();
+const {getLogger} = require(`../lib/logger`);
 
 const {mockData} = require(`./search.test-data`);
 const {HttpCode} = require(`../../const`);
 
 const app = express();
+const logger = getLogger();
 app.use(express.json());
-search(app, new DataService(mockData));
+
+serviceLocator.register(`app`, app);
+serviceLocator.register(`logger`, logger);
+serviceLocator.register(`searchService`, new DataService(mockData));
+serviceLocator.factory(`search`, search);
+serviceLocator.get(`search`);
 
 describe(`API returns offer based on search query`, () => {
 

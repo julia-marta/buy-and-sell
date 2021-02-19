@@ -3,21 +3,30 @@
 const express = require(`express`);
 const request = require(`supertest`);
 
-const offers = require(`./offers`);
 const comments = require(`./comments`);
 const OfferService = require(`../data-service/offer`);
 const CommentService = require(`../data-service/comment`);
+const serviceLocator = require(`../lib/service-locator`)();
+const {getLogger} = require(`../lib/logger`);
 
 const {mockData} = require(`./offers.test-data`);
 const {HttpCode} = require(`../../const`);
 
 const createAPI = () => {
+  serviceLocator.clear();
+
   const app = express();
   const cloneData = JSON.parse(JSON.stringify(mockData));
+  const logger = getLogger();
   app.use(express.json());
 
-  const router = comments(new CommentService());
-  offers(app, new OfferService(cloneData), router);
+  serviceLocator.register(`app`, app);
+  serviceLocator.register(`logger`, logger);
+  serviceLocator.register(`offerService`, new OfferService(cloneData));
+  serviceLocator.register(`commentService`, new CommentService());
+
+  serviceLocator.factory(`comments`, comments);
+  serviceLocator.get(`comments`);
 
   return app;
 };
@@ -36,6 +45,17 @@ describe(`API returns a list of comments to given offer`, () => {
   test(`Returns list of 3 comments`, () => expect(response.body.length).toBe(3));
   test(`First comment's id equals "Wc7py5"`, () => expect(response.body[0].id).toBe(`Wc7py5`));
 
+});
+
+describe(`API refuses to return list of comments to non-existent offer`, () => {
+
+  const app = createAPI();
+
+  test(`When trying to get comments to non-existent offer response code is 404`, () => {
+
+    return request(app).get(`/offers/NOEXIST/comments/P5YcED`)
+      .expect(HttpCode.NOT_FOUND);
+  });
 });
 
 describe(`API creates a comment if data is valid`, () => {

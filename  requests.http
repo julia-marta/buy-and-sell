@@ -60,7 +60,7 @@ Content-Type: application/json
 ###
 
 # Удаление объявления
-DELETE http://localhost:3000/api/offers/U9yX7 HTTP/1.1
+DELETE http://localhost:3000/api/offers/U9cyX7 HTTP/1.1
 
 ###
 
@@ -96,4 +96,4 @@ Content-Type: application/json
 ###
 
 # Поиск объявлений
-GET http://localhost:3000/api/search?query=подборку HTTP/1.1
+GET http://localhost:3000/api/search?query=антиквариат HTTP/1.1

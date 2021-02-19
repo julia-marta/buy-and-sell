@@ -5,16 +5,25 @@ const request = require(`supertest`);
 
 const offers = require(`./offers`);
 const DataService = require(`../data-service/offer`);
+const serviceLocator = require(`../lib/service-locator`)();
+const {getLogger} = require(`../lib/logger`);
 
 const {mockData, mockOffer} = require(`./offers.test-data`);
 const {HttpCode} = require(`../../const`);
 
 const createAPI = () => {
+  serviceLocator.clear();
+
   const app = express();
   const cloneData = JSON.parse(JSON.stringify(mockData));
-  const mockRouter = jest.fn();
+  const logger = getLogger();
   app.use(express.json());
-  offers(app, new DataService(cloneData), mockRouter);
+
+  serviceLocator.register(`app`, app);
+  serviceLocator.register(`logger`, logger);
+  serviceLocator.register(`offerService`, new DataService(cloneData));
+  serviceLocator.factory(`offers`, offers);
+  serviceLocator.get(`offers`);
 
   return app;
 };
@@ -46,6 +55,17 @@ describe(`API returns an offer with given id`, () => {
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
   test(`Offer's title is "Продам отличную подборку фильмов на VHS."`, () => expect(response.body.title).toBe(`Продам отличную подборку фильмов на VHS.`));
+});
+
+describe(`API refuses to return non-existent offer`, () => {
+
+  const app = createAPI();
+
+  test(`When trying to get non-existent offer response code is 404`, () => {
+
+    return request(app).get(`/offers/NOEXIST`)
+    .expect(HttpCode.NOT_FOUND);
+  });
 });
 
 describe(`API creates an offer if data is valid`, () => {
