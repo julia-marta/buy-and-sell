@@ -2,8 +2,8 @@
 
 module.exports = () => {
 
-  let dependencies = {};
-  let factories = {};
+  const dependencies = {};
+  const factories = {};
   const serviceLocator = {};
 
   serviceLocator.factory = (name, factory) => {
@@ -26,11 +26,6 @@ module.exports = () => {
     }
 
     return dependencies[name];
-  };
-
-  serviceLocator.clear = () => {
-    dependencies = {};
-    factories = {};
   };
 
   return serviceLocator;

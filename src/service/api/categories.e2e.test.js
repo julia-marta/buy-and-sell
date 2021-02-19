@@ -5,11 +5,12 @@ const request = require(`supertest`);
 
 const categories = require(`./categories`);
 const DataService = require(`../data-service/category`);
-const serviceLocator = require(`../lib/service-locator`)();
+const serviceLocatorFactory = require(`../lib/service-locator`);
 
 const {mockData} = require(`./categories.test-data`);
 const {HttpCode} = require(`../../const`);
 
+const serviceLocator = serviceLocatorFactory();
 const app = express();
 app.use(express.json());
 serviceLocator.register(`app`, app);

@@ -5,12 +5,13 @@ const request = require(`supertest`);
 
 const search = require(`./search`);
 const DataService = require(`../data-service/search`);
-const serviceLocator = require(`../lib/service-locator`)();
-const {getLogger} = require(`../lib/logger`);
+const serviceLocatorFactory = require(`../lib/service-locator`);
+const {getLogger} = require(`../lib/test-logger`);
 
 const {mockData} = require(`./search.test-data`);
 const {HttpCode} = require(`../../const`);
 
+const serviceLocator = serviceLocatorFactory();
 const app = express();
 const logger = getLogger();
 app.use(express.json());

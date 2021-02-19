@@ -6,15 +6,14 @@ const request = require(`supertest`);
 const comments = require(`./comments`);
 const OfferService = require(`../data-service/offer`);
 const CommentService = require(`../data-service/comment`);
-const serviceLocator = require(`../lib/service-locator`)();
-const {getLogger} = require(`../lib/logger`);
+const serviceLocatorFactory = require(`../lib/service-locator`);
+const {getLogger} = require(`../lib/test-logger`);
 
 const {mockData} = require(`./offers.test-data`);
 const {HttpCode} = require(`../../const`);
 
 const createAPI = () => {
-  serviceLocator.clear();
-
+  const serviceLocator = serviceLocatorFactory();
   const app = express();
   const cloneData = JSON.parse(JSON.stringify(mockData));
   const logger = getLogger();

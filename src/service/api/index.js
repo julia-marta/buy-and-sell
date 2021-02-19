@@ -6,12 +6,14 @@ const offers = require(`../api/offers`);
 const comments = require(`../api/comments`);
 const search = require(`../api/search`);
 const getMockData = require(`../lib/get-mock-data`);
-const serviceLocator = require(`../lib/service-locator`)();
+const serviceLocatorFactory = require(`../lib/service-locator`);
 
 const {CategoryService, OfferService, CommentService, SearchService} = require(`../data-service`);
 
 module.exports = async (logger) => {
+
   const app = new Router();
+  const serviceLocator = serviceLocatorFactory();
 
   const mockData = await getMockData();
 
