@@ -68,7 +68,7 @@ const generateComments = (count, comments) => (
   }))
 );
 
-const getPictureFileName = (number) => number > 10 ? `item${number}.jpg` : `item0${number}.jpg`;
+const getPictureFileName = (number) => number >= 10 ? `item${number}.jpg` : `item0${number}.jpg`;
 
 const generateOffers = (count, titles, categories, sentences, comments) => (
   Array(count).fill({}).map(() => ({
