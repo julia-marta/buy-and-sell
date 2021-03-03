@@ -7,16 +7,17 @@ block content
         h1.visually-hidden Карточка объявления
         .ticket__content
           .ticket__img
-            img(src="/img/ticket.jpg", srcset="/img/ticket@2x.jpg 2x", alt="Изображение товара")
+            if (offer.picture !== ``)
+              img(src=`/img/${offer.picture}`, alt="Изображение товара")
           .ticket__info
-            h2.ticket__title Мое старое кресло
+            h2.ticket__title #{offer.title}
             .ticket__header
               p.ticket__price
-                span.js-sum 4000
+                span.js-sum #{offer.sum}
                 |  ₽
-              p.ticket__action ПРОДАМ
+              p.ticket__action #{offer.type === `OFFER` ? `Куплю` : `Продам`}
             .ticket__desc
-              p Продам свое старое кресло, чтобы сидеть и читать книги зимними вечерами. Ножки мягкие, мой пол не царапают. Кресло почти новое – продаю, т.к. надоел серый цвет. Можно, конечно, накинуть плед и спасти ситуацию, но я все-таки хочу просто другое кресло. В общем оно на самом деле удобное и с ним все хорошо, просто нам пора расстаться.
+              p #{offer.description}
             .ticket__data
               p
                 b Дата добавления: 
@@ -54,22 +55,12 @@ block content
               button.comment-form__button.btn.btn--white.js-button(type="submit", disabled) Отправить
           .ticket__comments-list
             ul.comments-list
-              li
-                .comment-card
-                  .comment-card__header
-                    a.comment-card__avatar.avatar(href="#")
-                      img(src="/img/avatar02.jpg", srcset="/img/avatar02@2x.jpg 2x", alt="Аватар пользователя")
-                    p.comment-card__author Георгий Шпиц
-                  .comment-card__content
-                    p Что это за рухлядь? Стыдно такое даже фотографировать, не то, что продавать.
-              li
-                .comment-card
-                  .comment-card__header
-                    a.comment-card__avatar.avatar(href="#")
-                      img(src="/img/avatar03.jpg", srcset="/img/avatar03@2x.jpg 2x", alt="Аватар пользователя")
-                    p.comment-card__author Александр Бурый
-                  .comment-card__content
-                    p
-                      | А можете доставить мне домой? Готов доплатить 300 сверху.
-                      br
-                      | Живу в центре прямо рядом с Моховой улицей. Готов купить прямо сейчас. Мой телефон 9032594748
+              each comment in offer.comments
+                li
+                  .comment-card
+                    .comment-card__header
+                      a.comment-card__avatar.avatar(href="#")
+                        img(src="/img/avatar02.jpg", srcset="/img/avatar02@2x.jpg 2x", alt="Аватар пользователя")
+                      p.comment-card__author Георгий Шпиц
+                    .comment-card__content
+                      p #{comment.text}

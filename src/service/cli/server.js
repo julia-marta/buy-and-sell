@@ -12,6 +12,8 @@ const PortRestrict = {
   MAX: 65536,
 };
 
+const logger = getLogger({name: `api`});
+
 const app = express();
 app.use(express.json());
 
@@ -22,8 +24,6 @@ app.use((req, res, next) => {
   });
   next();
 });
-
-const logger = getLogger({name: `api`});
 
 module.exports = {
   name: `--server`,

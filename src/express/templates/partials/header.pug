@@ -8,8 +8,8 @@ header.header
           a(href="/") Публикации
         li.header__item
           a(href="/my/comments") Комментарии
-    form.search(method="get", action="#", autocomplete="off")
-      input(type="search", name="search", placeholder="Поиск", aria-label="Поиск")
+    form.search(method="get", action="/search", autocomplete="off")
+      input(type="search", name="search", placeholder="Поиск", aria-label="Поиск" value=(search || ``))
       .search__icon
       .search__close-btn
     a.header__avatar.avatar(href="#")
