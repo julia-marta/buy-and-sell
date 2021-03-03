@@ -13,7 +13,7 @@ block content
             li.tickets-list__item.js-card
               div(class=`ticket-card ticket-card--color${index >= 9 ? index + 1 : `0${index + 1}`}`)
                 .ticket-card__img
-                  img(src=`/img/${offer.picture}` alt=offer.title)
+                  img(src=`${offer.picture !== `` ? `/img/${offer.picture}` : `/img/blank.png`}` alt=offer.title)
                 .ticket-card__info
                   +ticketLabel(offer.type)
                   .ticket-card__categories

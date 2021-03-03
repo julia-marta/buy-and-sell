@@ -6,27 +6,29 @@ const mainRouter = new Router();
 
 const api = apiFactory.getAPI();
 
-mainRouter.get(`/`, async (req, res) => {
-  const offers = await api.getOffers();
-  res.render(`main`, {offers});
+mainRouter.get(`/`, async (req, res, next) => {
+  try {
+    const offers = await api.getOffers();
+    res.render(`main`, {offers});
+  } catch (err) {
+    next(err);
+  }
 });
 
 mainRouter.get(`/register`, (req, res) => res.render(`sign-up`));
 mainRouter.get(`/login`, (req, res) => res.render(`login`));
 
 mainRouter.get(`/search`, async (req, res) => {
-  try {
-    const {search} = req.query;
-    const results = await api.search(search);
+  const {search} = req.query;
+  let results;
 
-    res.render(`search-result`, {
-      results
-    });
+  try {
+    results = await api.search(search);
   } catch (error) {
-    res.render(`search-result`, {
-      results: []
-    });
+    results = [];
   }
+
+  res.render(`search-result`, {results, search});
 });
 
 module.exports = mainRouter;

@@ -4,9 +4,11 @@ const axios = require(`axios`);
 
 const TIMEOUT = 1000;
 const DEFAULT_PORT = 3000;
+const DEFAULT_HOST = `http://localhost`;
 
 const port = process.env.API_PORT || DEFAULT_PORT;
-const defaultURL = `http://localhost:${port}/api/`;
+const host = process.env.HOST || DEFAULT_HOST;
+const defaultURL = `${host}:${port}/api/`;
 
 class API {
 

@@ -13,7 +13,7 @@ block content
             li.tickets-list__item
               div(class=`ticket-card ticket-card--color${index >= 9 ? index + 1 : `0${index + 1}`}`)
                 .ticket-card__img
-                  img(src=`/img/${offer.picture}` alt=offer.title)
+                  img(src=`${offer.picture !== `` ? `/img/${offer.picture}` : `/img/blank.png`}` alt=offer.title)
                 .ticket-card__info
                   +ticketLabel(offer.type)
                   .ticket-card__categories
@@ -21,7 +21,7 @@ block content
                       a(href="#") #{item}
                   .ticket-card__header
                     h3.ticket-card__title
-                      a(href="#") #{offer.title}
+                      a(href=`/offers/${offer.id}`) #{offer.title}
                     p.ticket-card__price
                       span.js-sum #{offer.sum}
                       |  ₽
@@ -38,7 +38,7 @@ block content
             li.tickets-list__item
               div(class=`ticket-card ticket-card--color${index >= 9 ? index + 1 : `0${index + 1}`}`)
                 .ticket-card__img
-                  img(src=`/img/${offer.picture}` alt=offer.title)
+                  img(src=`${offer.picture !== `` ? `/img/${offer.picture}` : `/img/blank.png`}` alt=offer.title)
                 .ticket-card__info
                   +ticketLabel(offer.type)
                   .ticket-card__categories
@@ -46,7 +46,7 @@ block content
                       a(href="#") #{category}
                   .ticket-card__header
                     h3.ticket-card__title
-                      a(href="#") #{offer.title}
+                      a(href=`/offers/${offer.id}`) #{offer.title}
                     p.ticket-card__price
                       span.js-sum #{offer.sum}
                       |  ₽
