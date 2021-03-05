@@ -5,11 +5,7 @@ const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
 
 const {ExitCode, MAX_ID_LENGTH} = require(`../../const`);
-
-const {
-  getRandomInt,
-  shuffleArray,
-} = require(`../../utils`);
+const {getRandomInt, shuffleArray} = require(`../../utils`);
 
 const FILE_NAME = `mocks.json`;
 const MAX_DESCRIPTION_LENGTH = 5;
