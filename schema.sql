@@ -1,13 +1,8 @@
-DROP TABLE IF EXISTS categories;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS offers;
-DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS users cascade;
+DROP TABLE IF EXISTS categories cascade;
+DROP TABLE IF EXISTS offers cascade;
+DROP TABLE IF EXISTS comments cascade;
 DROP TABLE IF EXISTS offers_categories;
-
-CREATE TABLE categories(
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  name varchar(255) NOT NULL
-);
 
 CREATE TABLE users(
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -18,16 +13,33 @@ CREATE TABLE users(
   avatar varchar(50) NOT NULL
 );
 
+CREATE TABLE categories(
+  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name varchar(255) NOT NULL
+);
+
 CREATE TABLE offers(
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   title varchar(255) NOT NULL,
   description text NOT NULL,
-  sum integer NOT NULL,
   type varchar(5) NOT NULL,
+  sum integer NOT NULL,
   picture varchar(50),
   user_id integer NOT NULL,
   created_at timestamp DEFAULT current_timestamp,
   FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE offer_categories(
+  offer_id integer NOT NULL,
+  category_id integer NOT NULL,
+  PRIMARY KEY (offer_id, category_id),
+  FOREIGN KEY (offer_id) REFERENCES offers(id)
+  		ON DELETE CASCADE
+		  ON UPDATE CASCADE,
+  FOREIGN KEY (category_id) REFERENCES categories(id)
+  		ON DELETE CASCADE
+		  ON UPDATE CASCADE
 );
 
 CREATE TABLE comments(
@@ -38,14 +50,6 @@ CREATE TABLE comments(
   created_at timestamp DEFAULT current_timestamp,
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (offer_id) REFERENCES offers(id)
-);
-
-CREATE TABLE offer_categories(
-  offer_id integer NOT NULL,
-  category_id integer NOT NULL,
-  PRIMARY KEY (offer_id, category_id),
-  FOREIGN KEY (offer_id) REFERENCES offers(id),
-  FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
 CREATE INDEX ON offers (title);
