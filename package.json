@@ -7,7 +7,7 @@
     "test": "npm run eslint && npm run test::rest",
     "test::rest": "jest src/service/api",
     "eslint": "eslint --ext .js src/",
-    "start": "cross-env NODE_ENV=production LOG_LEVEL=error IS_DEV_MODE=false node ./src/service/service.js",
+    "start": "cross-env NODE_ENV=production LOG_LEVEL=error IS_DEV_MODE=false node -r dotenv/config ./src/service/service.js",
     "start::debug": "cross-env node -r dotenv/config ./src/service/service.js",
     "server": "npm run start -- --server",
     "server::debug": "npm run start::debug -- --server",
@@ -40,7 +40,9 @@
     "express": "4.17.1",
     "multer": "1.4.2",
     "nanoid": "3.1.20",
+    "pg": "8.5.1",
     "pino": "6.11.1",
-    "pug": "2.0.4"
+    "pug": "2.0.4",
+    "sequelize": "6.5.0"
   }
 }
