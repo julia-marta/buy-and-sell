@@ -2,25 +2,31 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
-
+const Sequelize = require(`sequelize`);
+const initDB = require(`../lib/init-db`);
 const search = require(`./search`);
 const DataService = require(`../data-service/search`);
 const serviceLocatorFactory = require(`../lib/service-locator`);
 const {getLogger} = require(`../lib/test-logger`);
-
-const {mockData} = require(`./search.test-data`);
+const {mockOffers, mockCategories} = require(`./search.test-data`);
 const {HttpCode} = require(`../../const`);
+
+const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
 
 const serviceLocator = serviceLocatorFactory();
 const app = express();
 const logger = getLogger();
 app.use(express.json());
 
-serviceLocator.register(`app`, app);
-serviceLocator.register(`logger`, logger);
-serviceLocator.register(`searchService`, new DataService(mockData));
-serviceLocator.factory(`search`, search);
-serviceLocator.get(`search`);
+beforeAll(async () => {
+  await initDB(mockDB, {categories: mockCategories, offers: mockOffers});
+  serviceLocator.register(`app`, app);
+  serviceLocator.register(`logger`, logger);
+  serviceLocator.register(`searchService`, new DataService(mockDB));
+  serviceLocator.factory(`search`, search);
+  serviceLocator.get(`search`);
+});
+
 
 describe(`API returns offer based on search query`, () => {
 
@@ -35,8 +41,8 @@ describe(`API returns offer based on search query`, () => {
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
   test(`2 offers found`, () => expect(response.body.length).toBe(2));
-  test(`First offer has correct id`, () => expect(response.body[0].id).toBe(`K1aM1D`));
-  test(`Second offer has correct id`, () => expect(response.body[1].id).toBe(`BoIjCr`));
+  test(`First offer has correct sum`, () => expect(response.body[0].sum).toBe(83497));
+  test(`Second offer has correct sum`, () => expect(response.body[1].sum).toBe(6659));
 
 });
 

@@ -2,9 +2,11 @@
 
 const {HttpCode} = require(`../../const`);
 
-module.exports = (service, logger) => (req, res, next) => {
+module.exports = (service, logger) => async (req, res, next) => {
   const {offerId} = req.params;
-  const offer = service.findOne(offerId);
+  const {comments} = req.query;
+
+  const offer = await service.findOne(offerId, comments);
 
   if (!offer) {
     res.status(HttpCode.NOT_FOUND).send(`Offer with ${offerId} not found`);

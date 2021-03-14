@@ -1,14 +1,23 @@
 'use strict';
 
-module.exports.mockData = [
+module.exports.mockCategories = [
+  `Животные`,
+  `Журналы`,
+  `Цветы`,
+  `Книги`,
+  `Разное`,
+  `Игры`,
+  `Марки`
+];
+
+module.exports.mockOffers = [
   {
-    id: `SZmJnR`,
     type: `SALE`,
     title: `Продам советскую посуду. Почти не разбита.`,
     description: `Кажется, что это хрупкая вещь.`,
     sum: 82743,
     picture: `item12.jpg`,
-    category: [
+    categories: [
       `Животные`,
       `Журналы`,
       `Цветы`,
@@ -18,38 +27,34 @@ module.exports.mockData = [
     ],
     comments: [
       {
-        id: `AyA19w`,
         text: `А где блок питания? Вы что?! В магазине дешевле.`
       }
     ]
   },
   {
-    id: `R1AcyQ`,
     type: `OFFER`,
     title: `Продам новую приставку Sony Playstation 5.`,
     description: `Мой дед не мог её сломать. Если найдёте дешевле — сброшу цену. Таких предложений больше нет! Кому нужен этот новый телефон, если тут такое... Продаю с болью в сердце...`,
     sum: 94532,
     picture: `item05.jpg`,
-    category: [
+    categories: [
       `Игры`,
       `Разное`,
       `Марки`
     ],
     comments: [
       {
-        id: `RlR0iM`,
         text: `Совсем немного...`
       }
     ]
   },
   {
-    id: `9Pyaks`,
     type: `SALE`,
     title: `Куплю антиквариат.`,
     description: `Две страницы заляпаны свежим кофе.`,
     sum: 39815,
     picture: `item05.jpg`,
-    category: [
+    categories: [
       `Игры`,
       `Журналы`,
       `Животные`,
@@ -58,19 +63,15 @@ module.exports.mockData = [
     ],
     comments: [
       {
-        id: `0kq9DK`,
         text: `Почему в таком ужасном состоянии? А где блок питания? Совсем немного...`
       },
       {
-        id: `usQVlp`,
         text: `Вы что?! В магазине дешевле. Неплохо, но дорого. А где блок питания?`
       },
       {
-        id: `t7T1Y2`,
         text: `А где блок питания?`
       },
       {
-        id: `lVbbgO`,
         text: `А сколько игр в комплекте? С чем связана продажа? Почему так дешёво? Продаю в связи с переездом. Отрываю от сердца.`
       }
     ]

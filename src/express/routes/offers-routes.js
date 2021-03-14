@@ -29,7 +29,7 @@ offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
     type: body.action,
     description: body.comment,
     title: body[`ticket-name`],
-    category: typeof body.category === `string` ? [body.category] : body.category
+    categories: body.category
   };
 
   try {
@@ -59,7 +59,7 @@ offersRouter.get(`/:id`, async (req, res, next) => {
   const {id} = req.params;
 
   try {
-    const offer = await api.getOffer(id);
+    const offer = await api.getOffer(id, {comments: true});
     res.render(`offers/ticket`, {offer});
   } catch (err) {
     next(err);

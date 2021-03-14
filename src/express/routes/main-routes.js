@@ -8,9 +8,14 @@ const api = apiFactory.getAPI();
 
 mainRouter.get(`/`, async (req, res, next) => {
   try {
-    const offers = await api.getOffers();
-    res.render(`main`, {offers});
+    const [offers, categories] = await Promise.all([
+      api.getOffers(),
+      api.getCategories(true)
+    ]);
+
+    res.render(`main`, {offers, categories});
   } catch (err) {
+    console.log(err);
     next(err);
   }
 });
