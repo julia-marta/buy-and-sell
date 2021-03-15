@@ -34,11 +34,11 @@ block content
                 b Контакты: 
                 a(href="mailto:shkatulkin@ya.ru") shkatulkin@ya.ru
             ul.ticket__tags
-              each category in offer.categories
+              each category, index in offer.categories
                 li
                   a.category-tile.category-tile--small(href="#")
                     span.category-tile__image
-                      +categoryImage(category)
+                      +categoryImage(category, images[index])
                     span.category-tile__label #{category.name}
         .ticket__comments
           h2.ticket__subtitle Комментарии

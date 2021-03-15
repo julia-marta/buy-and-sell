@@ -1,29 +1,19 @@
 "use strict";
 
-const {Model} = require(`sequelize`);
-const defineCategory = require(`./category`);
-const defineComment = require(`./comment`);
-const defineOffer = require(`./offer`);
-const Aliase = require(`./aliase`);
-
-class OfferCategory extends Model {}
+const {defineCategory, defineCategoryRelations} = require(`./category`);
+const {defineComment, defineCommentRelations} = require(`./comment`);
+const {defineOffer, defineOfferRelations} = require(`./offer`);
+const defineOfferCategory = require(`./offer-category`);
 
 const define = (sequelize) => {
   const Category = defineCategory(sequelize);
   const Comment = defineComment(sequelize);
   const Offer = defineOffer(sequelize);
-  OfferCategory.init({}, {
-    sequelize,
-    modelName: `OfferCategory`,
-    tableName: `offer-categories`
-  });
+  const OfferCategory = defineOfferCategory(sequelize);
 
-  Offer.hasMany(Comment, {as: Aliase.COMMENTS, foreignKey: `offerId`});
-  Comment.belongsTo(Offer, {foreignKey: `offerId`});
-
-  Offer.belongsToMany(Category, {through: OfferCategory, as: Aliase.CATEGORIES});
-  Category.belongsToMany(Offer, {through: OfferCategory, as: Aliase.OFFERS});
-  Category.hasMany(OfferCategory, {as: Aliase.OFFER_CATEGORIES});
+  defineOfferRelations(Comment, Category, OfferCategory);
+  defineCommentRelations(Offer);
+  defineCategoryRelations(Offer, OfferCategory);
 
   return {Category, Comment, Offer, OfferCategory};
 };

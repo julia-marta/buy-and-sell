@@ -1,10 +1,10 @@
 section.categories-list
   h1.visually-hidden Сервис объявлений "Куплю - продам"
   ul.categories-list__wrapper
-    each category in categories
+    each category, index in categories
       li.categories-list__item
         a.category-tile.category-tile--default(href="#")
           span.category-tile__image
-            +categoryImage(category)
+            +categoryImage(category, images[index])
           span.category-tile__label #{category.name}  
             span.category-tile__qty.js-qty #{category.count}

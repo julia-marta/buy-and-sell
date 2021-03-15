@@ -1,10 +1,11 @@
 "use strict";
 
 const {DataTypes, Model} = require(`sequelize`);
+const Aliase = require(`./aliase`);
 
 class Offer extends Model {}
 
-const define = (sequelize) => Offer.init({
+const defineOffer = (sequelize) => Offer.init({
   description: {
     type: DataTypes.STRING,
     allowNull: false
@@ -28,4 +29,10 @@ const define = (sequelize) => Offer.init({
   tableName: `offers`
 });
 
-module.exports = define;
+const defineOfferRelations = (Comment, Category, OfferCategory) => {
+
+  Offer.hasMany(Comment, {as: Aliase.COMMENTS, foreignKey: `offerId`});
+  Offer.belongsToMany(Category, {through: OfferCategory, as: Aliase.CATEGORIES});
+};
+
+module.exports = {defineOffer, defineOfferRelations};

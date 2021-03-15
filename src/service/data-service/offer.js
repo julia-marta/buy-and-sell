@@ -22,10 +22,10 @@ class OfferService {
     return !!deletedRows;
   }
 
-  async findAll(isComments) {
+  async findAll(withComments) {
     const include = [Aliase.CATEGORIES];
 
-    if (isComments) {
+    if (withComments) {
       include.push(Aliase.COMMENTS);
     }
 
@@ -34,10 +34,10 @@ class OfferService {
     return offers.map((offer) => offer.get());
   }
 
-  async findOne(id, isComments) {
+  async findOne(id, withComments) {
     const include = [Aliase.CATEGORIES];
 
-    if (isComments) {
+    if (withComments) {
       include.push(Aliase.COMMENTS);
     }
 

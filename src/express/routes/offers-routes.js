@@ -3,7 +3,8 @@
 const {Router} = require(`express`);
 const apiFactory = require(`../api`);
 const {upload} = require(`../middlewares/multer`);
-const {IMAGE_TYPES} = require(`../../const`);
+const {getRandomInt} = require(`../../utils`);
+const {IMAGE_TYPES, CategoryImageName} = require(`../../const`);
 const offersRouter = new Router();
 
 const api = apiFactory.getAPI();
@@ -60,7 +61,12 @@ offersRouter.get(`/:id`, async (req, res, next) => {
 
   try {
     const offer = await api.getOffer(id, {comments: true});
-    res.render(`offers/ticket`, {offer});
+
+    const images = Array(offer.categories.length).fill().map(() => (
+      getRandomInt(CategoryImageName.MIN, CategoryImageName.MAX)
+    ));
+
+    res.render(`offers/ticket`, {offer, images});
   } catch (err) {
     next(err);
   }

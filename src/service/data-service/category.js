@@ -9,31 +9,32 @@ class CategoryService {
     this._OfferCategory = sequelize.models.OfferCategory;
   }
 
-  async findAll(isCount) {
-    if (isCount) {
-      const result = await this._Category.findAll({
-        attributes: [
-          `id`,
-          `name`,
-          [
-            Sequelize.fn(
-                `COUNT`,
-                `*`
-            ),
-            `count`
-          ]
-        ],
-        group: [Sequelize.col(`Category.id`)],
-        include: [{
-          model: this._OfferCategory,
-          as: Aliase.OFFER_CATEGORIES,
-          attributes: []
-        }]
-      });
-      return result.map((it) => it.get());
-    } else {
-      return this._Category.findAll({raw: true});
-    }
+  async findAllWithCount() {
+    const result = await this._Category.findAll({
+      attributes: [
+        `id`,
+        `name`,
+        [
+          Sequelize.fn(
+              `COUNT`,
+              `*`
+          ),
+          `count`
+        ]
+      ],
+      group: [Sequelize.col(`Category.id`)],
+      include: [{
+        model: this._OfferCategory,
+        as: Aliase.OFFER_CATEGORIES,
+        attributes: []
+      }]
+    });
+
+    return result.map((it) => it.get());
+  }
+
+  async findAll() {
+    return this._Category.findAll({raw: true});
   }
 }
 

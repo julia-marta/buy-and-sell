@@ -4,7 +4,7 @@ const {HttpCode} = require(`../../const`);
 
 module.exports = (service, logger) => async (req, res, next) => {
   const {offerId} = req.params;
-  const {comments} = req.query;
+  const {comments = false} = req.query;
 
   const offer = await service.findOne(offerId, comments);
 

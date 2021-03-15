@@ -18,7 +18,7 @@ module.exports = (serviceLocator) => {
   app.use(`/offers`, route);
 
   route.get(`/`, async (req, res) => {
-    const {comments} = req.query;
+    const {comments = false} = req.query;
 
     const offers = await service.findAll(comments);
     return res.status(HttpCode.OK).json(offers);
