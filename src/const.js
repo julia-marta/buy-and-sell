@@ -17,6 +17,11 @@ module.exports.HttpCode = {
   BAD_REQUEST: 400,
 };
 
+module.exports.CategoryImageName = {
+  MIN: 1,
+  MAX: 6,
+};
+
 module.exports.API_PREFIX = `/api`;
 
 module.exports.MAX_ID_LENGTH = 6;

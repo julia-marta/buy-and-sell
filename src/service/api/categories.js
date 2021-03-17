@@ -11,9 +11,17 @@ module.exports = (serviceLocator) => {
 
   app.use(`/categories`, route);
 
-  route.get(`/`, (req, res) => {
-    const categories = service.findAll();
-    res.status(HttpCode.OK).json(categories);
+  route.get(`/`, async (req, res) => {
+    const {count = false} = req.query;
+    let categories;
+
+    if (count) {
+      categories = await service.findAllWithCount();
+    } else {
+      categories = await service.findAll();
+    }
+
+    return res.status(HttpCode.OK).json(categories);
   });
 
   return route;

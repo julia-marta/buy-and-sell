@@ -12,7 +12,7 @@ module.exports = (serviceLocator) => {
 
   app.use(`/search`, route);
 
-  route.get(`/`, (req, res) => {
+  route.get(`/`, async (req, res) => {
     const {query = ``} = req.query;
 
     if (!query) {
@@ -20,7 +20,8 @@ module.exports = (serviceLocator) => {
       return logger.error(`Invalid query.`);
     }
 
-    return res.status(HttpCode.OK).json(service.findAll(query));
+    const searchResults = await service.findAll(query);
+    return res.status(HttpCode.OK).json(searchResults);
   });
 
   return route;

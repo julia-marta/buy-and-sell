@@ -1,6 +1,11 @@
 extends ../layout.pug
 
 block content
+  -
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    }
   main.page-content
     section.ticket
       .ticket__wrapper
@@ -8,7 +13,7 @@ block content
         .ticket__content
           .ticket__img
             if (offer.picture !== ``)
-              img(src=`/img/${offer.picture}`, alt="Изображение товара")
+              img(src=`/img/${offer.picture}`, alt=offer.title)
           .ticket__info
             h2.ticket__title #{offer.title}
             .ticket__header
@@ -21,7 +26,7 @@ block content
             .ticket__data
               p
                 b Дата добавления: 
-                span 20 ноября 2019
+                span #{formatDate(offer.createdAt)}
               p
                 b Автор: 
                 a(href="#") Денис Шкатулкин
@@ -29,16 +34,12 @@ block content
                 b Контакты: 
                 a(href="mailto:shkatulkin@ya.ru") shkatulkin@ya.ru
             ul.ticket__tags
-              li
-                a.category-tile.category-tile--small(href="#")
-                  span.category-tile__image
-                    img(src="/img/cat.jpg", srcset="/img/cat@2x.jpg 2x", alt="Иконка категории")
-                  span.category-tile__label Дом
-              li
-                a.category-tile.category-tile--small(href="#")
-                  span.category-tile__image
-                    img(src="/img/cat04.jpg", srcset="/img/cat04@2x.jpg 2x", alt="Иконка категории")
-                  span.category-tile__label Спорт и отдых
+              each category, index in offer.categories
+                li
+                  a.category-tile.category-tile--small(href="#")
+                    span.category-tile__image
+                      +categoryImage(category, images[index])
+                    span.category-tile__label #{category.name}
         .ticket__comments
           h2.ticket__subtitle Комментарии
           .ticket__comment-form

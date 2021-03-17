@@ -2,21 +2,28 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
-
+const Sequelize = require(`sequelize`);
+const initDB = require(`../lib/init-db`);
 const categories = require(`./categories`);
 const DataService = require(`../data-service/category`);
 const serviceLocatorFactory = require(`../lib/service-locator`);
-
-const {mockData} = require(`./categories.test-data`);
+const {mockOffers, mockCategories} = require(`./categories.test-data`);
 const {HttpCode} = require(`../../const`);
+
+const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
 
 const serviceLocator = serviceLocatorFactory();
 const app = express();
 app.use(express.json());
-serviceLocator.register(`app`, app);
-serviceLocator.register(`categoryService`, new DataService(mockData));
-serviceLocator.factory(`categories`, categories);
-serviceLocator.get(`categories`);
+
+beforeAll(async () => {
+  await initDB(mockDB, {categories: mockCategories, offers: mockOffers});
+
+  serviceLocator.register(`app`, app);
+  serviceLocator.register(`categoryService`, new DataService(mockDB));
+  serviceLocator.factory(`categories`, categories);
+  serviceLocator.get(`categories`);
+});
 
 describe(`API returns category list`, () => {
 
@@ -30,9 +37,8 @@ describe(`API returns category list`, () => {
   test(`Returns list of 7 categories`, () => expect(response.body.length).toBe(7));
 
   test(`Category names are "Животные", "Журналы", "Цветы", "Книги", "Разное", "Игры", "Марки"`,
-      () => expect(response.body).toEqual(
+      () => expect(response.body.map((it) => it.name)).toEqual(
           expect.arrayContaining([`Животные`, `Журналы`, `Цветы`, `Книги`, `Разное`, `Игры`, `Марки`])
       )
   );
-
 });

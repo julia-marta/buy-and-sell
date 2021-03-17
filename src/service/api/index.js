@@ -5,8 +5,9 @@ const categories = require(`../api/categories`);
 const offers = require(`../api/offers`);
 const comments = require(`../api/comments`);
 const search = require(`../api/search`);
-const getMockData = require(`../lib/get-mock-data`);
 const serviceLocatorFactory = require(`../lib/service-locator`);
+const sequelize = require(`../lib/sequelize`);
+const defineModels = require(`../models`);
 
 const {CategoryService, OfferService, CommentService, SearchService} = require(`../data-service`);
 
@@ -14,15 +15,14 @@ module.exports = async (logger) => {
 
   const app = new Router();
   const serviceLocator = serviceLocatorFactory();
-
-  const mockData = await getMockData();
+  defineModels(sequelize);
 
   serviceLocator.register(`app`, app);
   serviceLocator.register(`logger`, logger);
-  serviceLocator.register(`categoryService`, new CategoryService(mockData));
-  serviceLocator.register(`offerService`, new OfferService(mockData));
-  serviceLocator.register(`commentService`, new CommentService());
-  serviceLocator.register(`searchService`, new SearchService(mockData));
+  serviceLocator.register(`categoryService`, new CategoryService(sequelize));
+  serviceLocator.register(`offerService`, new OfferService(sequelize));
+  serviceLocator.register(`commentService`, new CommentService(sequelize));
+  serviceLocator.register(`searchService`, new SearchService(sequelize));
 
   serviceLocator.factory(`categories`, categories);
   serviceLocator.factory(`offers`, offers);

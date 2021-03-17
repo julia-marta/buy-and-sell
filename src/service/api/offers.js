@@ -17,9 +17,10 @@ module.exports = (serviceLocator) => {
 
   app.use(`/offers`, route);
 
-  route.get(`/`, (req, res) => {
-    const offers = service.findAll();
+  route.get(`/`, async (req, res) => {
+    const {comments = false} = req.query;
 
+    const offers = await service.findAll(comments);
     return res.status(HttpCode.OK).json(offers);
   });
 
@@ -29,30 +30,30 @@ module.exports = (serviceLocator) => {
     return res.status(HttpCode.OK).json(offer);
   });
 
-  route.post(`/`, isOfferValid, (req, res) => {
-    const offer = service.create(req.body);
+  route.post(`/`, isOfferValid, async (req, res) => {
+    const offer = await service.create(req.body);
 
     return res.status(HttpCode.CREATED).json(offer);
   });
 
-  route.put(`/:offerId`, [isOfferExist, isOfferValid], (req, res) => {
+  route.put(`/:offerId`, [isOfferExist, isOfferValid], async (req, res) => {
     const {offerId} = req.params;
 
-    const updatedOffer = service.update(offerId, req.body);
+    await service.update(offerId, req.body);
 
-    return res.status(HttpCode.OK).json(updatedOffer);
+    return res.status(HttpCode.OK).send(`Offer was updated`);
   });
 
-  route.delete(`/:offerId`, (req, res) => {
+  route.delete(`/:offerId`, async (req, res) => {
     const {offerId} = req.params;
-    const deletedOffer = service.drop(offerId);
+    const deleted = await service.drop(offerId);
 
-    if (!deletedOffer) {
+    if (!deleted) {
       res.status(HttpCode.NOT_FOUND).send(`Offer with ${offerId} not found`);
       return logger.error(`Offer not found: ${offerId}`);
     }
 
-    return res.status(HttpCode.OK).json(deletedOffer);
+    return res.status(HttpCode.OK).send(`Offer was deleted`);
   });
 
   return route;

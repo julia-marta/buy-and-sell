@@ -3,7 +3,8 @@
 const {Router} = require(`express`);
 const apiFactory = require(`../api`);
 const {upload} = require(`../middlewares/multer`);
-const {IMAGE_TYPES} = require(`../../const`);
+const {getRandomInt} = require(`../../utils`);
+const {IMAGE_TYPES, CategoryImageName} = require(`../../const`);
 const offersRouter = new Router();
 
 const api = apiFactory.getAPI();
@@ -29,7 +30,7 @@ offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
     type: body.action,
     description: body.comment,
     title: body[`ticket-name`],
-    category: typeof body.category === `string` ? [body.category] : body.category
+    categories: body.category
   };
 
   try {
@@ -59,8 +60,13 @@ offersRouter.get(`/:id`, async (req, res, next) => {
   const {id} = req.params;
 
   try {
-    const offer = await api.getOffer(id);
-    res.render(`offers/ticket`, {offer});
+    const offer = await api.getOffer(id, {comments: true});
+
+    const images = Array(offer.categories.length).fill().map(() => (
+      getRandomInt(CategoryImageName.MIN, CategoryImageName.MAX)
+    ));
+
+    res.render(`offers/ticket`, {offer, images});
   } catch (err) {
     next(err);
   }
