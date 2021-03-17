@@ -1,19 +1,20 @@
 "use strict";
 
-const {defineCategory, defineCategoryRelations} = require(`./category`);
-const {defineComment, defineCommentRelations} = require(`./comment`);
-const {defineOffer, defineOfferRelations} = require(`./offer`);
-const defineOfferCategory = require(`./offer-category`);
+const CategoryModel = require(`./category`);
+const CommentModel = require(`./comment`);
+const OfferModel = require(`./offer`);
+const OfferCategoryModel = require(`./offer-category`);
 
 const define = (sequelize) => {
-  const Category = defineCategory(sequelize);
-  const Comment = defineComment(sequelize);
-  const Offer = defineOffer(sequelize);
-  const OfferCategory = defineOfferCategory(sequelize);
 
-  defineOfferRelations(Comment, Category, OfferCategory);
-  defineCommentRelations(Offer);
-  defineCategoryRelations(Offer, OfferCategory);
+  const Category = CategoryModel.define(sequelize);
+  const Comment = CommentModel.define(sequelize);
+  const Offer = OfferModel.define(sequelize);
+  const OfferCategory = OfferCategoryModel.define(sequelize);
+
+  const models = [CategoryModel, CommentModel, OfferModel];
+
+  models.forEach((model) => model.defineRelations({Comment, Category, OfferCategory, Offer}));
 
   return {Category, Comment, Offer, OfferCategory};
 };

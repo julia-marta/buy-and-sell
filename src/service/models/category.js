@@ -5,7 +5,7 @@ const Aliase = require(`./aliase`);
 
 class Category extends Model {}
 
-const defineCategory = (sequelize) => Category.init({
+const define = (sequelize) => Category.init({
   name: {
     type: DataTypes.STRING,
     allowNull: false
@@ -16,10 +16,12 @@ const defineCategory = (sequelize) => Category.init({
   tableName: `categories`
 });
 
-const defineCategoryRelations = (Offer, OfferCategory) => {
+const defineRelations = (models) => {
+
+  const {Offer, OfferCategory} = models;
 
   Category.belongsToMany(Offer, {through: OfferCategory, as: Aliase.OFFERS});
   Category.hasMany(OfferCategory, {as: Aliase.OFFER_CATEGORIES});
 };
 
-module.exports = {defineCategory, defineCategoryRelations};
+module.exports = {define, defineRelations};

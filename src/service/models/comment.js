@@ -4,7 +4,7 @@ const {DataTypes, Model} = require(`sequelize`);
 
 class Comment extends Model {}
 
-const defineComment = (sequelize) => Comment.init({
+const define = (sequelize) => Comment.init({
   text: {
     type: DataTypes.STRING,
     allowNull: false
@@ -15,9 +15,11 @@ const defineComment = (sequelize) => Comment.init({
   tableName: `comments`
 });
 
-const defineCommentRelations = (Offer) => {
+const defineRelations = (models) => {
+
+  const {Offer} = models;
 
   Comment.belongsTo(Offer, {foreignKey: `offerId`});
 };
 
-module.exports = {defineComment, defineCommentRelations};
+module.exports = {define, defineRelations};
