@@ -18,10 +18,16 @@ module.exports = (serviceLocator) => {
   app.use(`/offers`, route);
 
   route.get(`/`, async (req, res) => {
-    const {comments = false} = req.query;
+    const {offset, limit, comments = false} = req.query;
+    let result;
 
-    const offers = await service.findAll(comments);
-    return res.status(HttpCode.OK).json(offers);
+    if (limit || offset) {
+      result = await service.findPage({limit, offset});
+    } else {
+      result = await service.findAll(comments);
+    }
+
+    return res.status(HttpCode.OK).json(result);
   });
 
   route.get(`/:offerId`, isOfferExist, (req, res) => {

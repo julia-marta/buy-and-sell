@@ -52,3 +52,5 @@ block content
                       |  ₽
                   .ticket-card__desc
                     p #{offer.description}
+  if withPagination
+    +pagination(page, totalPages, range, `?`)
