@@ -24,8 +24,8 @@ class API {
     return response.data;
   }
 
-  getOffers({comments} = {}) {
-    return this._load(`/offers`, {params: {comments}});
+  getOffers({offset, limit, comments} = {}) {
+    return this._load(`/offers`, {params: {offset, limit, comments}});
   }
 
   getOffer(id, {comments} = {}) {

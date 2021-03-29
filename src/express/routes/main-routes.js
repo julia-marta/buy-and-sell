@@ -3,16 +3,24 @@
 const {Router} = require(`express`);
 const apiFactory = require(`../api`);
 const mainRouter = new Router();
-const {getRandomInt} = require(`../../utils`);
+const {getRandomInt, getPagerRange} = require(`../../utils`);
 const {CategoryImageName} = require(`../../const`);
+
+const OFFERS_PER_PAGE = 8;
+const PAGER_WIDTH = 2;
 
 const api = apiFactory.getAPI();
 
 mainRouter.get(`/`, async (req, res, next) => {
 
+  let {page = 1} = req.query;
+  page = +page;
+  const limit = OFFERS_PER_PAGE;
+  const offset = (page - 1) * OFFERS_PER_PAGE;
+
   try {
-    const [offers, categories] = await Promise.all([
-      api.getOffers(),
+    const [{count, offers}, categories] = await Promise.all([
+      api.getOffers({limit, offset}),
       api.getCategories({count: true})
     ]);
 
@@ -20,9 +28,13 @@ mainRouter.get(`/`, async (req, res, next) => {
       getRandomInt(CategoryImageName.MIN, CategoryImageName.MAX)
     ));
 
-    res.render(`main`, {offers, categories, images});
+    const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
+    const range = getPagerRange(page, totalPages, PAGER_WIDTH);
+    const withPagination = totalPages > 1;
+
+    res.render(`main`, {offers, categories, images, page, totalPages, range, withPagination});
   } catch (err) {
-    console.log(err);
+
     next(err);
   }
 });

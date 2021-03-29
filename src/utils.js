@@ -15,3 +15,26 @@ module.exports.shuffleArray = (someArray) => {
 
   return someArray;
 };
+
+module.exports.getPagerRange = (currentPage, totalPages, pagerWidth) => {
+  let start = currentPage - pagerWidth;
+  let end = currentPage + pagerWidth;
+
+  if (start < 1) {
+    end += 1 - start;
+    start = 1;
+  }
+
+  if (end > totalPages) {
+    start -= end - totalPages;
+    end = totalPages;
+  }
+
+  if (start < 1) {
+    start = 1;
+  }
+
+  const index = start - 1;
+
+  return {start, end, index};
+};
