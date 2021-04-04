@@ -59,6 +59,10 @@ class OfferService {
     const [affectedRows] = await this._Offer.update(offer, {
       where: {id}
     });
+
+    const updatedOffer = await this._Offer.findByPk(id);
+    await updatedOffer.setCategories(offer.categories);
+
     return !!affectedRows;
   }
 }
