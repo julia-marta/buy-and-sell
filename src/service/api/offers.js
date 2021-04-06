@@ -2,18 +2,20 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
-const offerValidator = require(`../middlewares/offer-validator`);
+const schemaValidator = require(`../middlewares/schema-validator`);
 const offerExists = require(`../middlewares/offer-exists`);
+const offerSchema = require(`../schemas/offer`);
 
 module.exports = (serviceLocator) => {
   const route = new Router();
 
   const app = serviceLocator.get(`app`);
   const service = serviceLocator.get(`offerService`);
+  const categoryService = serviceLocator.get(`categoryService`);
   const logger = serviceLocator.get(`logger`);
 
   const isOfferExist = offerExists(service, logger);
-  const isOfferValid = offerValidator(logger);
+  const isOfferValid = schemaValidator(offerSchema, logger, categoryService);
 
   app.use(`/offers`, route);
 

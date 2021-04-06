@@ -7,8 +7,10 @@ block content
         h1.ticket-form__title Новая публикация
         .ticket-form__tile
           form.ticket-form__form.form(action="/offers/add", method="post", enctype="multipart/form-data", autocomplete="off")
-            .ticket-form__avatar-container.js-preview-container
+            .ticket-form__avatar-container.js-preview-container(class=(offer && offer.picture ? `uploaded` : ``))
               .ticket-form__avatar.js-preview
+                if offer && offer.picture
+                  img(src=`/img/${offer.picture}` alt="")
               .ticket-form__field-avatar
                 input#avatar.visually-hidden.js-file-field(type="file", name="avatar")
                 label(for="avatar")
@@ -17,28 +19,34 @@ block content
             .ticket-form__content
               .ticket-form__row
                 .form__field
-                  input#ticket-name.js-field(type="text", name="ticket-name", required)
+                  input#ticket-name.js-field(type="text", name="ticket-name", value=(offer && offer.title ? offer.title : ``), required)
                   label(for="ticket-name") Название
                   span Обязательное поле
               .ticket-form__row
                 .form__field
                   textarea#comment-field.js-field(name="comment", cols="30", rows="10", maxlength="400", minlength="50")
+                    |#{offer && offer.description ? offer.description : ``}
                   label(for="comment-field") Описание
                   span Обязательное поле
               .ticket-form__row
-                select#category-field.form__select.js-multiple-select(name="category", data-label="Выбрать категорию публикации")
+                select#category-field.form__select.js-multiple-select(name="category", data-label="Выбрать категорию публикации", multiple)
                   each category in categories
-                    option(value=category.id) #{category.name}
+                    option(value=category.id selected=(offer && offer.categories ? offer.categories.some(item => item === (category.id).toString()) : false)) #{category.name}
               .ticket-form__row
                 .form__field.form__field--price
-                  input#price-field.js-field.js-price(type="number", name="price", min="1", required)
+                  input#price-field.js-field.js-price(type="number", name="price", min="1", value=(offer && offer.sum ? offer.sum : ``), required)
                   label(for="price-field") Цена
                   span Обязательное поле
                 .form__switch.switch
                   .switch__item
-                    input#buy-field.visually-hidden(type="radio", name="action", value="OFFER")
+                    input#buy-field.visually-hidden(type="radio", name="action", value="OFFER", checked=(offer && offer.type ? offer.type === 'OFFER' : false))
                     label.switch__button(for="buy-field") Куплю
                   .switch__item
-                    input#sell-field.visually-hidden(type="radio", name="action", value="SALE")
+                    input#sell-field.visually-hidden(type="radio", name="action", value="SALE", checked=(offer && offer.type ? offer.type === 'SALE' : false))
                     label.switch__button(for="sell-field") Продам
+              if errorMessages
+                p При создании объявления произошли ошибки:
+                ul
+                  each error in errorMessages
+                    li #{error}
             button.form__button.btn.btn--medium.js-button(type="submit", disabled) Опубликовать

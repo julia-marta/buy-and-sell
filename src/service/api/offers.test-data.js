@@ -108,7 +108,7 @@ module.exports.mockOffers = [
 module.exports.mockOffer = {
   categories: [1, 2],
   title: `Дам погладить котика`,
-  description: `Дам погладить котика. Дорого. Не гербалайф`,
+  description: `Дам погладить котика. Дам погладить котика. Дам погладить котика.`,
   picture: `cat.jpg`,
   type: `OFFER`,
   sum: 100500

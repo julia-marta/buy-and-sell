@@ -46,6 +46,20 @@ class API {
       data
     });
   }
+
+  updateOffer(id, data) {
+    return this._load(`/offers/${id}`, {
+      method: `PUT`,
+      data
+    });
+  }
+
+  createComment(id, data) {
+    return this._load(`/offers/${id}/comments`, {
+      method: `POST`,
+      data
+    });
+  }
 }
 
 const defaultAPI = new API(defaultURL, TIMEOUT);

@@ -5,11 +5,12 @@ const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 const initDB = require(`../lib/init-db`);
 const offers = require(`./offers`);
-const DataService = require(`../data-service/offer`);
+const OfferService = require(`../data-service/offer`);
+const CategoryService = require(`../data-service/category`);
 const serviceLocatorFactory = require(`../lib/service-locator`);
 const {getLogger} = require(`../lib/test-logger`);
 const {mockOffers, mockCategories, mockOffer} = require(`./offers.test-data`);
-const {HttpCode} = require(`../../const`);
+const {HttpCode, OfferMessage} = require(`../../const`);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
@@ -21,7 +22,8 @@ const createAPI = async () => {
 
   serviceLocator.register(`app`, app);
   serviceLocator.register(`logger`, logger);
-  serviceLocator.register(`offerService`, new DataService(mockDB));
+  serviceLocator.register(`offerService`, new OfferService(mockDB));
+  serviceLocator.register(`categoryService`, new CategoryService(mockDB));
   serviceLocator.factory(`offers`, offers);
   serviceLocator.get(`offers`);
 
@@ -97,23 +99,155 @@ describe(`API refuses to create an offer if data is invalid`, () => {
     app = await createAPI();
   });
 
-  test(`Without any required property response code is 400`, async () => {
-    for (const key of Object.keys(newOffer)) {
-      const badOffer = {...newOffer};
-      delete badOffer[key];
-
-      await request(app).post(`/offers`).send(badOffer)
-        .expect(HttpCode.BAD_REQUEST);
-    }
-  });
-
   test(`With any additional excess property response code is 400`, async () => {
 
     const badOffer = {...newOffer};
     badOffer.excess = `excess value`;
 
-    await request(app).post(`/offers`).send(badOffer)
-      .expect(HttpCode.BAD_REQUEST);
+    await request(app).post(`/offers`).send(badOffer).expect(HttpCode.BAD_REQUEST);
+  });
+
+  describe(`Without required title property`, () => {
+    const badOffer = {...newOffer};
+    delete badOffer.title;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers`).send(badOffer);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(OfferMessage.REQUIRED.TITLE));
+  });
+
+  describe(`Without required description property`, () => {
+    const badOffer = {...newOffer};
+    delete badOffer.description;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers`).send(badOffer);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(OfferMessage.REQUIRED.TEXT));
+  });
+
+  describe(`Without required type property`, () => {
+    const badOffer = {...newOffer};
+    delete badOffer.type;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers`).send(badOffer);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(OfferMessage.REQUIRED.TYPE));
+  });
+
+  describe(`Without required sum property`, () => {
+    const badOffer = {...newOffer};
+    delete badOffer.sum;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers`).send(badOffer);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(OfferMessage.REQUIRED.PRICE));
+  });
+
+  describe(`Without required categories property`, () => {
+    const badOffer = {...newOffer};
+    delete badOffer.categories;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers`).send(badOffer);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(OfferMessage.REQUIRED.CATEGORIES));
+  });
+
+  describe(`With invalid type`, () => {
+    const badOffer = {...newOffer};
+    badOffer.type = `RENT`;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers`).send(badOffer);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(OfferMessage.VALID.TYPE));
+  });
+
+  describe(`With invalid category id`, () => {
+    const badOffer = {...newOffer};
+    badOffer.categories = [1, 2, 123];
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers`).send(badOffer);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(OfferMessage.VALID.CATEGORIES));
+  });
+
+  describe(`With categories not in array`, () => {
+    const badOffer = {...newOffer};
+    badOffer.categories = `123`;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers`).send(badOffer);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(OfferMessage.VALID.CATEGORIES));
+  });
+
+  describe(`With sum less than min value`, () => {
+    const badOffer = {...newOffer};
+    badOffer.sum = 10;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers`).send(badOffer);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(OfferMessage.MIN_PRICE));
+  });
+
+  describe(`With title length less than min value`, () => {
+    const badOffer = {...newOffer};
+    badOffer.title = `Тест`;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers`).send(badOffer);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(OfferMessage.MIN_TITLE_LENGTH));
+  });
+
+  describe(`With description length less than min value`, () => {
+    const badOffer = {...newOffer};
+    badOffer.description = `Короткое описание`;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers`).send(badOffer);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(OfferMessage.MIN_TEXT_LENGTH));
   });
 });
 

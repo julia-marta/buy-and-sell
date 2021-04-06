@@ -2,8 +2,9 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
-const commentValidator = require(`../middlewares/comment-validator`);
+const schemaValidator = require(`../middlewares/schema-validator`);
 const offerExists = require(`../middlewares/offer-exists`);
+const commentSchema = require(`../schemas/comment`);
 
 module.exports = (serviceLocator) => {
   const route = new Router({mergeParams: true});
@@ -14,6 +15,7 @@ module.exports = (serviceLocator) => {
   const logger = serviceLocator.get(`logger`);
 
   const isOfferExist = offerExists(offerService, logger);
+  const isCommentValid = schemaValidator(commentSchema, logger);
 
   app.use(`/offers/:offerId/comments`, route);
 
@@ -37,7 +39,7 @@ module.exports = (serviceLocator) => {
     return res.status(HttpCode.OK).send(`Comment was deleted`);
   });
 
-  route.post(`/`, [isOfferExist, commentValidator(logger)], async (req, res) => {
+  route.post(`/`, [isOfferExist, isCommentValid], async (req, res) => {
     const {offer} = res.locals;
     const comment = await commentService.create(offer.id, req.body);
 

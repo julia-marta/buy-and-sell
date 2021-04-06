@@ -10,7 +10,7 @@ const CommentService = require(`../data-service/comment`);
 const serviceLocatorFactory = require(`../lib/service-locator`);
 const {getLogger} = require(`../lib/test-logger`);
 const {mockOffers, mockCategories} = require(`./offers.test-data`);
-const {HttpCode} = require(`../../const`);
+const {HttpCode, CommentMessage} = require(`../../const`);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
@@ -59,7 +59,7 @@ describe(`API refuses to return list of comments to non-existent offer`, () => {
 describe(`API creates a comment if data is valid`, () => {
 
   const newComment = {
-    text: `Новый комментарий`
+    text: `Новый валидный комментарий`
   };
 
   let app;
@@ -71,7 +71,7 @@ describe(`API creates a comment if data is valid`, () => {
   });
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
-  test(`Returns comment with valid text`, () => expect(response.body.text).toBe(`Новый комментарий`));
+  test(`Returns comment with valid text`, () => expect(response.body.text).toBe(`Новый валидный комментарий`));
   test(`Comments count is changed`, () => request(app).get(`/offers/1/comments`)
     .expect((res) => expect(res.body.length).toBe(4))
   );
@@ -80,7 +80,7 @@ describe(`API creates a comment if data is valid`, () => {
 describe(`API refuses to create a comment`, () => {
 
   const newComment = {
-    text: `Новый комментарий`
+    text: `Новый валидный комментарий`
   };
 
   let app;
@@ -96,13 +96,6 @@ describe(`API refuses to create a comment`, () => {
 
   });
 
-  test(`When trying to create a comment without required property response code is 400`, () => {
-
-    return request(app).post(`/offers/1/comments`).send({})
-      .expect(HttpCode.BAD_REQUEST);
-
-  });
-
   test(`When trying to create a comment with additional excess property response code is 400`, () => {
 
     const invalidComment = {...newComment};
@@ -111,6 +104,32 @@ describe(`API refuses to create a comment`, () => {
     return request(app).post(`/offers/1/comments`).send(invalidComment)
       .expect(HttpCode.BAD_REQUEST);
 
+  });
+
+  describe(`When trying to create a comment without required property`, () => {
+    const badComment = {};
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers/1/comments`).send(badComment);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(CommentMessage.REQUIRED));
+  });
+
+  describe(`When trying to create a comment with length less than min value`, () => {
+    const badComment = {
+      text: `Короткий коммент`
+    };
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/offers/1/comments`).send(badComment);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(CommentMessage.MIN_TEXT_LENGTH));
   });
 });
 
