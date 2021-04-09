@@ -97,3 +97,17 @@ Content-Type: application/json
 
 # Поиск объявлений
 GET http://localhost:3000/api/search?query=антиквариат HTTP/1.1
+
+###
+
+# Создание юзера
+POST http://localhost:3000/api/user
+Content-Type: application/json
+
+{
+  "firstname": "Имя",
+  "lastname": "Фамилия",
+  "email": "marta237@yandex.ru",
+  "password": "6418c57c376facecdb0f45e66c87469f",
+  "avatar": "myphoto.jpg"
+}
