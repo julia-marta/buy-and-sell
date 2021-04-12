@@ -11,6 +11,7 @@ class UserService {
   async add(userData) {
     const hash = await bcrypt.hash(userData.password, SALT_ROUNDS);
     userData.password = hash;
+    delete userData.repeat;
 
     const newUser = await this._User.create(userData);
     return newUser.get();
@@ -23,7 +24,7 @@ class UserService {
 
   async findByEmail(email) {
 
-    return this._Offer.findOne({
+    return this._User.findOne({
       where: {
         email,
       },

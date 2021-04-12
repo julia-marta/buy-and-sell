@@ -107,7 +107,8 @@ Content-Type: application/json
 {
   "firstname": "Имя",
   "lastname": "Фамилия",
-  "email": "marta237@yandex.ru",
-  "password": "6418c57c376facecdb0f45e66c87469f",
+  "email": "marta237@mail",
+  "password": "qwerty12345",
+  "repeat": "qwerty12345",
   "avatar": "myphoto.jpg"
 }

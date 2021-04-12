@@ -22,6 +22,8 @@ module.exports.MIN_PRICE = 100;
 
 module.exports.MIN_CATEGORIES_LENGTH = 1;
 
+module.exports.MIN_PASSWORD_LENGTH = 6;
+
 module.exports.Type = {
   OFFER: `OFFER`,
   SALE: `SALE`,
@@ -66,6 +68,26 @@ module.exports.CommentMessage = {
   REQUIRED: `Напишите что-нибудь`,
   MIN_TEXT_LENGTH: `Текст комментария должен быть не меньше 20 символов`,
   MAX_TEXT_LENGTH: `Текст объявления должен быть не больше 1000 символов`,
+};
+
+module.exports.UserMessage = {
+
+  REQUIRED: {
+    FIRSTNAME: `Укажите ваше имя`,
+    LASTNAME: `Укажите вашу фамилию`,
+    EMAIL: `Укажите ваш e-mail`,
+    PASSWORD: `Введите пароль`,
+    REPEAT: `Введите пароль ещё раз`,
+    AVATAR: `Загрузите аватар`
+  },
+  VALID: {
+    FIRSTNAME: `Имя может содержать только буквы и не должно включать пробелы`,
+    LASTNAME: `Фамилия может содержать только буквы и не должно включать пробелы`,
+    EMAIL: `E-mail не валиден. Введите валидный адре электронной почты`,
+    REPEAT: `Пароли не совпадают. Проверьте введённые данные`
+  },
+  MIN_PASSWORD_LENGTH: `Пароль должен быть не меньше 6 символов`,
+  EMAIL_ALREADY_REGISTERED: `Пользователь с таким электронным адресом уже зарегистрирован`
 };
 
 module.exports.CategoryImageName = {
