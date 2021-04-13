@@ -56,7 +56,7 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
 
   const userData = {
     firstname: body[`user-name`].split(` `)[0],
-    lastname: body[`user-name`].split(` `)[1] || ``,
+    lastname: body[`user-name`].split(` `)[1],
     email: body[`user-email`],
     password: body[`user-password`],
     repeat: body[`user-password-again`],

@@ -17,7 +17,7 @@ block content
               span.sign-up__text-upload Загрузить аватар…
               span.sign-up__text-another Загрузить другой аватар…
         .form__field.sign-up__field
-          input#user-name.js-field(type="text", name="user-name", value=(user && user.firstname ? `${user.firstname} ${user.lastname}` : ``))
+          input#user-name.js-field(type="text", name="user-name", value=(user && user.firstname ? `${user.firstname} ${user.lastname ? user.firstname : ``}` : ``))
           label(for="user-name") Имя и фамилия
           span Обязательное поле
         .form__field.sign-up__field
