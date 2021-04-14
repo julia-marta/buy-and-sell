@@ -10,13 +10,21 @@ module.exports = (schema, logger, service) => (
     let validSchema;
 
     if (service) {
-      const allCategories = await service.findAll();
-      const allCategoriesIds = allCategories.reduce((acc, item) => ([
-        item.id,
-        ...acc
-      ]), []);
+      try {
+        const allCategories = await service.findAll();
+        const allCategoriesIds = allCategories.reduce((acc, item) => ([
+          item.id,
+          ...acc
+        ]), []);
 
-      validSchema = schema(allCategoriesIds);
+        validSchema = schema(allCategoriesIds);
+      } catch (err) {
+        logger.error(`Can't get valid schema.`);
+        res.status(HttpCode.BAD_REQUEST).json({errorMessages: [`Something wrong`]});
+
+        return;
+      }
+
     } else {
       validSchema = schema;
     }

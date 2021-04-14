@@ -2,9 +2,10 @@
 
 const {Router} = require(`express`);
 const apiFactory = require(`../api`);
-const mainRouter = new Router();
+const {upload} = require(`../middlewares/multer`);
 const {getRandomInt, getPagerRange} = require(`../../utils`);
 const {CategoryImageName} = require(`../../const`);
+const mainRouter = new Router();
 
 const OFFERS_PER_PAGE = 8;
 const PAGER_WIDTH = 2;
@@ -39,7 +40,40 @@ mainRouter.get(`/`, async (req, res, next) => {
   }
 });
 
-mainRouter.get(`/register`, (req, res) => res.render(`sign-up`));
+mainRouter.get(`/register`, async (req, res) => {
+
+  const {user = null, errorMessages = null} = req.session;
+
+  req.session.user = null;
+  req.session.errorMessages = null;
+  res.render(`sign-up`, {user, errorMessages});
+
+});
+
+mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
+
+  const {body, file} = req;
+
+  const userData = {
+    firstname: body[`user-name`].split(` `)[0],
+    lastname: body[`user-name`].split(` `)[1],
+    email: body[`user-email`],
+    password: body[`user-password`],
+    repeat: body[`user-password-again`],
+    avatar: file ? file.filename : ``
+  };
+
+  try {
+    await api.createUser(userData);
+    return res.redirect(`/login`);
+  } catch (error) {
+    req.session.user = userData;
+    req.session.errorMessages = error.response.data.errorMessages;
+
+    return res.redirect(`/register`);
+  }
+});
+
 mainRouter.get(`/login`, (req, res) => res.render(`login`));
 
 mainRouter.get(`/search`, async (req, res) => {

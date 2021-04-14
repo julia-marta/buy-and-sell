@@ -13,9 +13,13 @@ offersRouter.get(`/category/:id`, (req, res) => res.render(`offers/category`));
 
 offersRouter.get(`/add`, async (req, res, next) => {
 
+  const {offer = null, errorMessages = null} = req.session;
+
   try {
     const categories = await api.getCategories();
-    res.render(`offers/new-ticket`, {categories});
+    req.session.offer = null;
+    req.session.errorMessages = null;
+    res.render(`offers/new-ticket`, {categories, offer, errorMessages});
   } catch (err) {
     next(err);
   }
@@ -36,30 +40,37 @@ offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
 
   try {
     await api.createOffer(offerData);
-    res.redirect(`/my`);
+    return res.redirect(`/my`);
   } catch (error) {
-    const categories = await api.getCategories();
-    const errorMessages = error.response.data.errorMessages;
+    req.session.offer = offerData;
+    req.session.errorMessages = error.response.data.errorMessages;
 
-    res.render(`offers/new-ticket`, {offer: offerData, categories, errorMessages});
+    return res.redirect(`/offers/add`);
   }
 });
 
 offersRouter.get(`/edit/:id`, async (req, res, next) => {
   const {id} = req.params;
+  const {newData = null, errorMessages = null} = req.session;
 
   try {
-    const [offer, categories] = await Promise.all([
-      api.getOffer(id),
-      api.getCategories()
-    ]);
+    const categories = await api.getCategories();
+    let offer;
 
-    const offerCategories = offer.categories.reduce((acc, item) => ([
-      item.id.toString(),
-      ...acc
-    ]), []);
+    if (newData) {
+      offer = {...newData, id};
+    } else {
+      offer = await api.getOffer(id);
+      const offerCategories = offer.categories.reduce((acc, item) => ([
+        item.id.toString(),
+        ...acc
+      ]), []);
+      offer = {...offer, categories: offerCategories};
+    }
 
-    res.render(`offers/ticket-edit`, {offer: {...offer, categories: offerCategories}, categories});
+    req.session.newData = null;
+    req.session.errorMessages = null;
+    res.render(`offers/ticket-edit`, {offer, categories, errorMessages});
   } catch (err) {
     next(err);
   }
@@ -82,17 +93,18 @@ offersRouter.post(`/edit/:id`, upload.single(`avatar`), async (req, res) => {
 
   try {
     await api.updateOffer(id, newData);
-    res.redirect(`/my`);
+    return res.redirect(`/my`);
   } catch (error) {
-    const categories = await api.getCategories();
-    const errorMessages = error.response.data.errorMessages;
+    req.session.newData = newData;
+    req.session.errorMessages = error.response.data.errorMessages;
 
-    res.render(`offers/ticket-edit`, {offer: {...newData, id}, categories, errorMessages});
+    return res.redirect(`/offers/edit/${id}`);
   }
 });
 
 offersRouter.get(`/:id`, async (req, res, next) => {
   const {id} = req.params;
+  const {errorMessages = null} = req.session;
 
   try {
     const offer = await api.getOffer(id, {comments: true});
@@ -101,7 +113,8 @@ offersRouter.get(`/:id`, async (req, res, next) => {
       getRandomInt(CategoryImageName.MIN, CategoryImageName.MAX)
     ));
 
-    res.render(`offers/ticket`, {offer, images});
+    req.session.errorMessages = null;
+    res.render(`offers/ticket`, {offer, images, errorMessages});
   } catch (err) {
     next(err);
   }
@@ -118,15 +131,10 @@ offersRouter.post(`/:id`, upload.single(`avatar`), async (req, res) => {
 
   try {
     await api.createComment(id, commentData);
-    res.redirect(`back`);
+    return res.redirect(`back`);
   } catch (error) {
-    const offer = await api.getOffer(id, {comments: true});
-    const errorMessages = error.response.data.errorMessages;
-    const images = Array(offer.categories.length).fill().map(() => (
-      getRandomInt(CategoryImageName.MIN, CategoryImageName.MAX)
-    ));
-
-    res.render(`offers/ticket`, {offer, images, errorMessages});
+    req.session.errorMessages = error.response.data.errorMessages;
+    return res.redirect(`back`);
   }
 });
 
