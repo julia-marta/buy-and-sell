@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 'use strict';
 
 const express = require(`express`);
@@ -8,7 +9,7 @@ const user = require(`./user`);
 const DataService = require(`../data-service/user`);
 const serviceLocatorFactory = require(`../lib/service-locator`);
 const {getLogger} = require(`../lib/test-logger`);
-const {HttpCode, UserMessage} = require(`../../const`);
+const {HttpCode, UserMessage, LoginMessage} = require(`../../const`);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
@@ -34,6 +35,11 @@ const mockUser = {
   password: `qwerty12345`,
   repeat: `qwerty12345`,
   avatar: `photo.png`
+};
+
+const mockLoginData = {
+  email: `user@ya.ru`,
+  password: `qwerty12345`,
 };
 
 describe(`API creates user if data is valid`, () => {
@@ -232,5 +238,116 @@ describe(`API refuses to create user if data is invalid`, () => {
 
     test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
     test(`Returns valid error message`, () => expect(response.text).toMatch(UserMessage.VALID.REPEAT));
+  });
+});
+
+
+describe(`API authentificate user if login data is valid`, () => {
+
+  const registeredUser = JSON.parse(JSON.stringify(mockUser));
+  const loginData = JSON.parse(JSON.stringify(mockLoginData));
+
+  let app;
+  let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    await request(app).post(`/user`).send(registeredUser);
+    response = await request(app).post(`/user/login`).send(loginData);
+  });
+
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+  test(`Returns registered user with valid firstname`, () => expect(response.body.firstname).toEqual(registeredUser.firstname));
+});
+
+describe(`API refuses to authentificate user if`, () => {
+
+  const registeredUser = JSON.parse(JSON.stringify(mockUser));
+  const loginData = JSON.parse(JSON.stringify(mockLoginData));
+
+  let app;
+  beforeAll(async () => {
+    app = await createAPI();
+    await request(app).post(`/user`).send(registeredUser);
+  });
+
+  describe(`email is not registered`, () => {
+
+    const badLoginData = {...loginData};
+    badLoginData.email = `wronguser@ya.ru`;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/user/login`).send(badLoginData);
+    });
+
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(LoginMessage.EMAIL_NOT_REGISTERED));
+  });
+
+  describe(`password is not match to registered`, () => {
+
+    const badLoginData = {...loginData};
+    badLoginData.password = `wrongpassword`;
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app).post(`/user/login`).send(badLoginData);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Returns valid error message`, () => expect(response.text).toMatch(LoginMessage.WRONG_PASSWORD));
+  });
+
+  describe(`login data is invalid`, () => {
+
+    test(`With any additional excess property response code is 400`, async () => {
+
+      const badLoginData = {...loginData};
+      badLoginData.excess = `excess value`;
+
+      await request(app).post(`/user/login`).send(badLoginData).expect(HttpCode.BAD_REQUEST);
+    });
+
+    describe(`Without required email property`, () => {
+      const badLoginData = {...loginData};
+      delete badLoginData.email;
+      let response;
+
+      beforeAll(async () => {
+        response = await request(app).post(`/user/login`).send(badLoginData);
+      });
+
+      test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+      test(`Returns valid error message`, () => expect(response.text).toMatch(LoginMessage.REQUIRED.EMAIL));
+    });
+
+    describe(`Without required password property`, () => {
+      const badLoginData = {...loginData};
+      delete badLoginData.password;
+      let response;
+
+      beforeAll(async () => {
+        response = await request(app).post(`/user/login`).send(badLoginData);
+      });
+
+      test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+      test(`Returns valid error message`, () => expect(response.text).toMatch(LoginMessage.REQUIRED.PASSWORD));
+    });
+
+    describe(`With invalid email`, () => {
+      const badLoginData = {...loginData};
+      badLoginData.email = `test@mail`;
+      let response;
+
+      beforeAll(async () => {
+        response = await request(app).post(`/user/login`).send(badLoginData);
+      });
+
+      test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+      test(`Returns valid error message`, () => expect(response.text).toMatch(LoginMessage.EMAIL_NOT_VALID));
+    });
   });
 });
