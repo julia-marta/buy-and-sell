@@ -90,6 +90,17 @@ module.exports.UserMessage = {
   EMAIL_ALREADY_REGISTERED: `Пользователь с таким электронным адресом уже зарегистрирован`
 };
 
+module.exports.LoginMessage = {
+
+  REQUIRED: {
+    EMAIL: `Укажите ваш e-mail`,
+    PASSWORD: `Введите пароль`,
+  },
+  EMAIL_NOT_VALID: `E-mail не валиден. Введите валидный адре электронной почты`,
+  EMAIL_NOT_REGISTERED: `Пользователь с таким электронным адресом не зарегистрирован`,
+  WRONG_PASSWORD: `Неверный пароль`
+};
+
 module.exports.CategoryImageName = {
   MIN: 1,
   MAX: 6,

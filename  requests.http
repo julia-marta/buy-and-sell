@@ -112,3 +112,14 @@ Content-Type: application/json
   "repeat": "qwerty12345",
   "avatar": "myphoto.jpg"
 }
+
+###
+
+# Аутентификация юзера
+POST http://localhost:3000/api/user/login
+Content-Type: application/json
+
+{
+  "email": "marta237@ma.ru",
+  "password": "qwerty12345"
+}
