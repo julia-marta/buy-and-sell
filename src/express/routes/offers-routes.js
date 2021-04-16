@@ -3,6 +3,7 @@
 const {Router} = require(`express`);
 const apiFactory = require(`../api`);
 const {upload} = require(`../middlewares/multer`);
+const privateRoute = require(`../middlewares/private-route`);
 const {getRandomInt} = require(`../../utils`);
 const {DEFAULT_IMAGE, CategoryImageName} = require(`../../const`);
 const offersRouter = new Router();
@@ -11,7 +12,7 @@ const api = apiFactory.getAPI();
 
 offersRouter.get(`/category/:id`, (req, res) => res.render(`offers/category`));
 
-offersRouter.get(`/add`, async (req, res, next) => {
+offersRouter.get(`/add`, privateRoute, async (req, res, next) => {
 
   const {offer = null, errorMessages = null} = req.session;
 
@@ -25,7 +26,7 @@ offersRouter.get(`/add`, async (req, res, next) => {
   }
 });
 
-offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
+offersRouter.post(`/add`, [privateRoute, upload.single(`avatar`)], async (req, res) => {
 
   const {body, file} = req;
 
@@ -49,7 +50,7 @@ offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
   }
 });
 
-offersRouter.get(`/edit/:id`, async (req, res, next) => {
+offersRouter.get(`/edit/:id`, privateRoute, async (req, res, next) => {
   const {id} = req.params;
   const {newData = null, errorMessages = null} = req.session;
 
@@ -76,7 +77,7 @@ offersRouter.get(`/edit/:id`, async (req, res, next) => {
   }
 });
 
-offersRouter.post(`/edit/:id`, upload.single(`avatar`), async (req, res) => {
+offersRouter.post(`/edit/:id`, [privateRoute, upload.single(`avatar`)], async (req, res) => {
   const {id} = req.params;
   const {body, file} = req;
 
@@ -120,7 +121,7 @@ offersRouter.get(`/:id`, async (req, res, next) => {
   }
 });
 
-offersRouter.post(`/:id`, upload.single(`avatar`), async (req, res) => {
+offersRouter.post(`/:id`, [privateRoute, upload.single(`avatar`)], async (req, res) => {
 
   const {id} = req.params;
   const {body} = req;

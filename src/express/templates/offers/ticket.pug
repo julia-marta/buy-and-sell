@@ -41,24 +41,32 @@ block content
                       +categoryImage(category, images[index])
                     span.category-tile__label #{category.name}
         .ticket__comments
+          if !session.isLogged
+            .ticket__warning
+              p
+                | Отправка комментариев доступна
+                br
+                | только для зарегистрированных пользователей.
+              a.btn.btn--big(href='/login') Вход и регистрация
           h2.ticket__subtitle Комментарии
-          .ticket__comment-form
-            form.form.comment-form(action=`/offers/${offer.id}`, method="post", enctype="multipart/form-data", autocomplete="off")
-              .comment-form__header
-                a.comment-form__avatar.avatar(href="#")
-                  img(src="/img/avatar.jpg", srcset="/img/avatar@2x.jpg 2x", alt="Аватар пользователя")
-                p.comment-form__author Вам слово
-              .comment-form__field
-                .form__field
-                  textarea#comment-field.js-field(name="comment", cols="30", rows="10") 
-                  label(for="comment-field") Текст комментария
-                  span Обязательное поле
-              if errorMessages
-                p При добавлении комментария произошли ошибки:
-                ul
-                  each error in errorMessages
-                    li #{error}
-              button.comment-form__button.btn.btn--white.js-button(type="submit", disabled) Отправить
+          if session.isLogged
+            .ticket__comment-form
+              form.form.comment-form(action=`/offers/${offer.id}`, method="post", enctype="multipart/form-data", autocomplete="off")
+                .comment-form__header
+                  a.comment-form__avatar.avatar(href="#")
+                    img(src=`/img/${session.loggedUser ? session.loggedUser.avatar : `avatar.jpg`}`, alt="Аватар пользователя")
+                  p.comment-form__author Вам слово
+                .comment-form__field
+                  .form__field
+                    textarea#comment-field.js-field(name="comment", cols="30", rows="10") 
+                    label(for="comment-field") Текст комментария
+                    span Обязательное поле
+                if errorMessages
+                  p При добавлении комментария произошли ошибки:
+                  ul
+                    each error in errorMessages
+                      li #{error}
+                button.comment-form__button.btn.btn--white.js-button(type="submit", disabled) Отправить
           .ticket__comments-list
             ul.comments-list
               each comment in offer.comments

@@ -2,11 +2,12 @@
 
 const {Router} = require(`express`);
 const apiFactory = require(`../api`);
+const privateRoute = require(`../middlewares/private-route`);
 const myRouter = new Router();
 
 const api = apiFactory.getAPI();
 
-myRouter.get(`/`, async (req, res, next) => {
+myRouter.get(`/`, privateRoute, async (req, res, next) => {
   try {
     const offers = await api.getOffers();
     res.render(`my/my-tickets`, {offers, myTicketsIsCurrent: true});
@@ -15,7 +16,7 @@ myRouter.get(`/`, async (req, res, next) => {
   }
 });
 
-myRouter.get(`/comments`, async (req, res, next) => {
+myRouter.get(`/comments`, privateRoute, async (req, res, next) => {
   try {
     const offers = await api.getOffers({comments: true});
     res.render(`my/comments`, {offers: offers.slice(0, 3), myCommentsIsCurrent: true});
