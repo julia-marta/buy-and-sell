@@ -74,7 +74,37 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
   }
 });
 
-mainRouter.get(`/login`, (req, res) => res.render(`login`));
+mainRouter.get(`/login`, async (req, res) => {
+
+  const {userEmail = null, errorMessages = null} = req.session;
+
+  req.session.userEmail = null;
+  req.session.errorMessages = null;
+  res.render(`login`, {userEmail, errorMessages});
+
+});
+
+mainRouter.post(`/login`, upload.single(`avatar`), async (req, res) => {
+
+  const {body} = req;
+
+  const loginData = {
+    email: body[`user-email`],
+    password: body[`user-password`],
+  };
+
+  try {
+    const loggedUser = await api.loginUser(loginData);
+    req.session.isLogged = true;
+    req.session.loggedUser = loggedUser;
+    return res.redirect(`/`);
+  } catch (error) {
+    req.session.userEmail = loginData.email;
+    req.session.errorMessages = error.response.data.errorMessages;
+
+    return res.redirect(`/login`);
+  }
+});
 
 mainRouter.get(`/search`, async (req, res) => {
   const {search} = req.query;

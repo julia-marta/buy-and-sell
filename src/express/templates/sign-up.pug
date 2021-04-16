@@ -25,11 +25,11 @@ block content
           label(for="user-email") Эл. почта
           span Обязательное поле
         .form__field.sign-up__field
-          input#user-password.js-field(type="password", name="user-password", value=(user && user.password ? user.password : ``))
+          input#user-password.js-field(type="password", name="user-password")
           label(for="user-password") Пароль
           span Обязательное поле
         .form__field.sign-up__field
-          input#user-password-again.js-field(type="password", name="user-password-again", value=(user && user.repeat ? user.repeat : ``))
+          input#user-password-again.js-field(type="password", name="user-password-again")
           label(for="user-password-again") Пароль еще раз
           span Обязательное поле
         if errorMessages
