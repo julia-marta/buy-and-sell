@@ -12,6 +12,6 @@ header(class=`header ${session.isLogged ? `header--logged` : ``}`)
       input(type="search", name="search", placeholder="Поиск", aria-label="Поиск" value=(search || ``))
       .search__icon
       .search__close-btn
-    a.header__avatar.avatar(href="#")
+    a.header__avatar.avatar(href="/logout")
       img(src=`/img/${session.loggedUser ? session.loggedUser.avatar : `avatar.jpg`}` alt="Аватар пользователя")
     a.header__input(href="/register") Вход и регистрация

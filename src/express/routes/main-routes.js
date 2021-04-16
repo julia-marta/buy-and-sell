@@ -1,6 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
+const csrf = require(`csurf`);
 const apiFactory = require(`../api`);
 const {upload} = require(`../middlewares/multer`);
 const {getRandomInt, getPagerRange} = require(`../../utils`);
@@ -11,6 +12,10 @@ const OFFERS_PER_PAGE = 8;
 const PAGER_WIDTH = 2;
 
 const api = apiFactory.getAPI();
+const csrfProtection = csrf({
+  value: (req) => {
+    return req.body.csrf;
+  }});
 
 mainRouter.get(`/`, async (req, res, next) => {
 
@@ -40,17 +45,19 @@ mainRouter.get(`/`, async (req, res, next) => {
   }
 });
 
-mainRouter.get(`/register`, async (req, res) => {
+mainRouter.get(`/register`, csrfProtection, async (req, res) => {
 
   const {user = null, errorMessages = null} = req.session;
 
+  const csrfToken = req.csrfToken();
+
   req.session.user = null;
   req.session.errorMessages = null;
-  res.render(`sign-up`, {user, errorMessages});
+  res.render(`sign-up`, {user, errorMessages, csrfToken});
 
 });
 
-mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
+mainRouter.post(`/register`, upload.single(`avatar`), csrfProtection, async (req, res) => {
 
   const {body, file} = req;
 
@@ -74,17 +81,19 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
   }
 });
 
-mainRouter.get(`/login`, async (req, res) => {
+mainRouter.get(`/login`, csrfProtection, async (req, res) => {
 
   const {userEmail = null, errorMessages = null} = req.session;
 
+  const csrfToken = req.csrfToken();
+
   req.session.userEmail = null;
   req.session.errorMessages = null;
-  res.render(`login`, {userEmail, errorMessages});
+  res.render(`login`, {userEmail, errorMessages, csrfToken});
 
 });
 
-mainRouter.post(`/login`, upload.single(`avatar`), async (req, res) => {
+mainRouter.post(`/login`, upload.single(`avatar`), csrfProtection, async (req, res) => {
 
   const {body} = req;
 
@@ -104,6 +113,12 @@ mainRouter.post(`/login`, upload.single(`avatar`), async (req, res) => {
 
     return res.redirect(`/login`);
   }
+});
+
+mainRouter.get(`/logout`, async (req, res) => {
+  req.session.destroy(() => {
+    res.redirect(`/login`);
+  });
 });
 
 mainRouter.get(`/search`, async (req, res) => {
