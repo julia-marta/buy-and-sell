@@ -7,6 +7,7 @@ class OfferService {
     this._Offer = sequelize.models.Offer;
     this._Comment = sequelize.models.Comment;
     this._Category = sequelize.models.Category;
+    this._OfferCategory = sequelize.models.OfferCategory;
   }
 
   async create(offerData) {
@@ -44,15 +45,38 @@ class OfferService {
     return this._Offer.findByPk(id, {include});
   }
 
-  async findPage({limit, offset}) {
+  async findPageByCategory({limit, offset, categoryId}) {
     const {count, rows} = await this._Offer.findAndCountAll({
       limit,
       offset,
-      include: [Aliase.CATEGORIES],
-      distinct: true
+      include: [Aliase.CATEGORIES, {
+        model: this._OfferCategory,
+        as: Aliase.OFFER_CATEGORIES,
+        attributes: [],
+        require: true,
+        where: {CategoryId: categoryId}
+      }],
+      distinct: true,
+      order: [[`createdAt`, `DESC`]]
     });
 
-    return {count, offers: rows};
+    return {count, offers: rows.map((item) => item.get())};
+  }
+
+  async findAllByCategory(categoryId) {
+
+    const offers = await this._Offer.findAll({
+      include: [Aliase.CATEGORIES, {
+        model: this._OfferCategory,
+        as: Aliase.OFFER_CATEGORIES,
+        attributes: [],
+        require: true,
+        where: {CategoryId: categoryId}
+      }],
+      order: [[`createdAt`, `DESC`]]
+    });
+
+    return offers.map((offer) => offer.get());
   }
 
   async update(id, offer) {

@@ -35,6 +35,7 @@ const defineRelations = (models) => {
 
   Offer.hasMany(Comment, {as: Aliase.COMMENTS, foreignKey: `offerId`});
   Offer.belongsToMany(Category, {through: OfferCategory, as: Aliase.CATEGORIES});
+  Offer.hasMany(OfferCategory, {as: Aliase.OFFER_CATEGORIES});
 };
 
 module.exports = {define, defineRelations};

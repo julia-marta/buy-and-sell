@@ -106,6 +106,10 @@ module.exports.CategoryImageName = {
   MAX: 6,
 };
 
+module.exports.OFFERS_PER_PAGE = 8;
+
+module.exports.PAGER_WIDTH = 2;
+
 module.exports.API_PREFIX = `/api`;
 
 module.exports.MAX_ID_LENGTH = 6;

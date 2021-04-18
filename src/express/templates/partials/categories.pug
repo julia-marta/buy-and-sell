@@ -3,7 +3,7 @@ section.categories-list
   ul.categories-list__wrapper
     each category, index in categories
       li.categories-list__item
-        a.category-tile.category-tile--default(href="#")
+        a(class=`category-tile ${currentCategory ? (currentCategory.id === category.id ? `category-tile--active` : ``)  : `category-tile--default`}`, href=`/offers/category/${category.id}`)
           span.category-tile__image
             +categoryImage(category, images[index])
           span.category-tile__label #{category.name}  

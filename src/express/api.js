@@ -24,8 +24,12 @@ class API {
     return response.data;
   }
 
-  getOffers({offset, limit, comments} = {}) {
-    return this._load(`/offers`, {params: {offset, limit, comments}});
+  getOffers({comments} = {}) {
+    return this._load(`/offers`, {params: {comments}});
+  }
+
+  getOffersByCategory(id, {offset, limit} = {}) {
+    return this._load(`/offers/category/${id}`, {params: {offset, limit}});
   }
 
   getOffer(id, {comments} = {}) {
@@ -38,6 +42,10 @@ class API {
 
   getCategories({count} = {}) {
     return this._load(`/categories`, {params: {count}});
+  }
+
+  getCategory(id) {
+    return this._load(`/categories/${id}`);
   }
 
   createOffer(data) {

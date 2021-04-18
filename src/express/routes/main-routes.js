@@ -4,12 +4,9 @@ const {Router} = require(`express`);
 const csrf = require(`csurf`);
 const apiFactory = require(`../api`);
 const {upload} = require(`../middlewares/multer`);
-const {getRandomInt, getPagerRange} = require(`../../utils`);
+const {getRandomInt} = require(`../../utils`);
 const {CategoryImageName} = require(`../../const`);
 const mainRouter = new Router();
-
-const OFFERS_PER_PAGE = 8;
-const PAGER_WIDTH = 2;
 
 const api = apiFactory.getAPI();
 const csrfProtection = csrf({
@@ -19,14 +16,9 @@ const csrfProtection = csrf({
 
 mainRouter.get(`/`, async (req, res, next) => {
 
-  let {page = 1} = req.query;
-  page = +page;
-  const limit = OFFERS_PER_PAGE;
-  const offset = (page - 1) * OFFERS_PER_PAGE;
-
   try {
-    const [{count, offers}, categories] = await Promise.all([
-      api.getOffers({limit, offset}),
+    const [offers, categories] = await Promise.all([
+      api.getOffers(),
       api.getCategories({count: true})
     ]);
 
@@ -34,11 +26,7 @@ mainRouter.get(`/`, async (req, res, next) => {
       getRandomInt(CategoryImageName.MIN, CategoryImageName.MAX)
     ));
 
-    const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
-    const range = getPagerRange(page, totalPages, PAGER_WIDTH);
-    const withPagination = totalPages > 1;
-
-    res.render(`main`, {offers, categories, images, page, totalPages, range, withPagination});
+    res.render(`main`, {offers, categories, images});
   } catch (err) {
 
     next(err);

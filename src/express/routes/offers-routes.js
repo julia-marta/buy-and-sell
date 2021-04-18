@@ -4,13 +4,41 @@ const {Router} = require(`express`);
 const apiFactory = require(`../api`);
 const {upload} = require(`../middlewares/multer`);
 const privateRoute = require(`../middlewares/private-route`);
-const {getRandomInt} = require(`../../utils`);
-const {DEFAULT_IMAGE, CategoryImageName} = require(`../../const`);
+const {getRandomInt, getPagerRange} = require(`../../utils`);
+const {DEFAULT_IMAGE, CategoryImageName, OFFERS_PER_PAGE, PAGER_WIDTH} = require(`../../const`);
 const offersRouter = new Router();
 
 const api = apiFactory.getAPI();
 
-offersRouter.get(`/category/:id`, (req, res) => res.render(`offers/category`));
+offersRouter.get(`/category/:id`, async (req, res, next) => {
+  const {id} = req.params;
+  let {page = 1} = req.query;
+  page = +page;
+  const limit = OFFERS_PER_PAGE;
+  const offset = (page - 1) * OFFERS_PER_PAGE;
+
+  try {
+    const [{count, offers}, currentCategory, categories] = await Promise.all([
+      api.getOffersByCategory(id, {limit, offset}),
+      api.getCategory(id),
+      api.getCategories({count: true})
+    ]);
+
+    const images = Array(categories.length).fill().map(() => (
+      getRandomInt(CategoryImageName.MIN, CategoryImageName.MAX)
+    ));
+
+    const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
+    const range = getPagerRange(page, totalPages, PAGER_WIDTH);
+    const withPagination = totalPages > 1;
+
+    res.render(`offers/category`, {currentCategory, count, offers, categories, images, page, totalPages, range, withPagination});
+  } catch (err) {
+
+    next(err);
+  }
+
+});
 
 offersRouter.get(`/add`, privateRoute, async (req, res, next) => {
 

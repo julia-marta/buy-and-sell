@@ -20,13 +20,21 @@ module.exports = (serviceLocator) => {
   app.use(`/offers`, route);
 
   route.get(`/`, async (req, res) => {
-    const {offset, limit, comments = false} = req.query;
+    const {comments = false} = req.query;
+    const result = await service.findAll(comments);
+
+    return res.status(HttpCode.OK).json(result);
+  });
+
+  route.get(`/category/:categoryId`, async (req, res) => {
+    const {categoryId} = req.params;
+    const {offset, limit} = req.query;
     let result;
 
     if (limit || offset) {
-      result = await service.findPage({limit, offset});
+      result = await service.findPageByCategory({limit, offset, categoryId});
     } else {
-      result = await service.findAll(comments);
+      result = await service.findAllByCategory({categoryId});
     }
 
     return res.status(HttpCode.OK).json(result);

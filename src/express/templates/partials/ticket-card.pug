@@ -1,0 +1,16 @@
+div(class=`ticket-card ticket-card--color${index >= 9 ? index + 1 : `0${index + 1}`}`)
+  .ticket-card__img
+    img(src=`${offer.picture !== `` ? `/img/${offer.picture}` : `/img/blank.png`}` alt=offer.title)
+  .ticket-card__info
+    +ticketLabel(offer.type)
+    .ticket-card__categories
+      each category in offer.categories
+        a(href=`/offers/category/${category.id}`) #{category.name}
+    .ticket-card__header
+      h3.ticket-card__title
+        a(href=`/offers/${offer.id}`) #{offer.title}
+      p.ticket-card__price
+        span.js-sum #{offer.sum}
+        |  ₽
+    .ticket-card__desc
+      p #{offer.description}

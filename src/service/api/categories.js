@@ -24,5 +24,13 @@ module.exports = (serviceLocator) => {
     return res.status(HttpCode.OK).json(categories);
   });
 
+  route.get(`/:id`, async (req, res) => {
+    const {id} = req.params;
+
+    const category = await service.findOne(id);
+
+    return res.status(HttpCode.OK).json(category);
+  });
+
   return route;
 };
