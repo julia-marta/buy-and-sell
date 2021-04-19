@@ -24,8 +24,8 @@ class API {
     return response.data;
   }
 
-  getOffers({comments} = {}) {
-    return this._load(`/offers`, {params: {comments}});
+  getOffers({comments, limit, popular} = {}) {
+    return this._load(`/offers`, {params: {comments, limit, popular}});
   }
 
   getOffersByCategory(id, {offset, limit} = {}) {

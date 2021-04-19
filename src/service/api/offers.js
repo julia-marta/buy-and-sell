@@ -20,8 +20,15 @@ module.exports = (serviceLocator) => {
   app.use(`/offers`, route);
 
   route.get(`/`, async (req, res) => {
-    const {comments = false} = req.query;
-    const result = await service.findAll(comments);
+    const {limit, popular, comments = false} = req.query;
+
+    let result;
+
+    if (popular) {
+      result = await service.findPopular(limit);
+    } else {
+      result = await service.findAll({comments});
+    }
 
     return res.status(HttpCode.OK).json(result);
   });
@@ -34,7 +41,7 @@ module.exports = (serviceLocator) => {
     if (limit || offset) {
       result = await service.findPageByCategory({limit, offset, categoryId});
     } else {
-      result = await service.findAllByCategory({categoryId});
+      result = await service.findAllByCategory(categoryId);
     }
 
     return res.status(HttpCode.OK).json(result);

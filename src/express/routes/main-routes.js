@@ -5,7 +5,7 @@ const csrf = require(`csurf`);
 const apiFactory = require(`../api`);
 const {upload} = require(`../middlewares/multer`);
 const {getRandomInt} = require(`../../utils`);
-const {CategoryImageName} = require(`../../const`);
+const {CategoryImageName, OFFERS_PER_PAGE} = require(`../../const`);
 const mainRouter = new Router();
 
 const api = apiFactory.getAPI();
@@ -16,11 +16,15 @@ const csrfProtection = csrf({
 
 mainRouter.get(`/`, async (req, res, next) => {
 
+  const limit = OFFERS_PER_PAGE;
+
   try {
     const [offers, categories] = await Promise.all([
-      api.getOffers(),
+      api.getOffers({limit, popular: true}),
       api.getCategories({count: true})
     ]);
+
+    console.log(offers);
 
     const images = Array(categories.length).fill().map(() => (
       getRandomInt(CategoryImageName.MIN, CategoryImageName.MAX)

@@ -1,5 +1,6 @@
 'use strict';
 
+const Sequelize = require(`sequelize`);
 const Aliase = require(`../models/aliase`);
 
 class OfferService {
@@ -23,14 +24,43 @@ class OfferService {
     return !!deletedRows;
   }
 
-  async findAll(withComments) {
+  async findAll(limit, withComments) {
     const include = [Aliase.CATEGORIES];
 
     if (withComments) {
       include.push(Aliase.COMMENTS);
     }
 
-    const offers = await this._Offer.findAll({include});
+    const offers = await this._Offer.findAll({
+      limit,
+      include,
+      attributes: {
+        include: [Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)), `count`],
+      },
+      order: [[`createdAt`, `DESC`]]
+    });
+
+    return offers.map((offer) => offer.get());
+  }
+
+  async findPopular(limit) {
+    const offers = await this._Offer.findAll({
+      limit,
+      group: [`Offer.id`],
+      attributes: {
+        include: [Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)), `count`]
+      },
+      include: [
+        {
+          model: this._Comment,
+          as: Aliase.COMMENTS,
+          attributes: [],
+        },
+        {model: this._Category,
+          as: Aliase.CATEGORIES},
+      ],
+      order: [[`count`, `DESC`]],
+    });
 
     return offers.map((offer) => offer.get());
   }
