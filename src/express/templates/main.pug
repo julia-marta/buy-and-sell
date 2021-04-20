@@ -9,7 +9,7 @@ block content
         .tickets-list__header
           p.tickets-list__title Самое свежее
         ul
-          each offer, index in offers
+          each offer, index in lastOffers
             li.tickets-list__item
               include partials/ticket-card.pug
 
@@ -19,6 +19,6 @@ block content
         .tickets-list__header
           p.tickets-list__title Самые обсуждаемые
         ul
-          each offer, index in offers
+          each offer, index in popularOffers
             li.tickets-list__item
               include partials/ticket-card.pug

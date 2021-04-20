@@ -19,18 +19,17 @@ mainRouter.get(`/`, async (req, res, next) => {
   const limit = OFFERS_PER_PAGE;
 
   try {
-    const [offers, categories] = await Promise.all([
+    const [lastOffers, popularOffers, categories] = await Promise.all([
+      api.getOffers({limit, last: true}),
       api.getOffers({limit, popular: true}),
       api.getCategories({count: true})
     ]);
-
-    console.log(offers);
 
     const images = Array(categories.length).fill().map(() => (
       getRandomInt(CategoryImageName.MIN, CategoryImageName.MAX)
     ));
 
-    res.render(`main`, {offers, categories, images});
+    res.render(`main`, {lastOffers, popularOffers, categories, images});
   } catch (err) {
 
     next(err);

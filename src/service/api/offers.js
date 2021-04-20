@@ -20,14 +20,16 @@ module.exports = (serviceLocator) => {
   app.use(`/offers`, route);
 
   route.get(`/`, async (req, res) => {
-    const {limit, popular, comments = false} = req.query;
+    const {limit, popular, last, comments = false} = req.query;
 
     let result;
 
     if (popular) {
       result = await service.findPopular(limit);
+    } else if (last) {
+      result = await service.findLast(limit);
     } else {
-      result = await service.findAll({comments});
+      result = await service.findAll(comments);
     }
 
     return res.status(HttpCode.OK).json(result);

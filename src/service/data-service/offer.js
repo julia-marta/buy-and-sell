@@ -9,6 +9,7 @@ class OfferService {
     this._Comment = sequelize.models.Comment;
     this._Category = sequelize.models.Category;
     this._OfferCategory = sequelize.models.OfferCategory;
+    this._sequelize = sequelize;
   }
 
   async create(offerData) {
@@ -24,19 +25,24 @@ class OfferService {
     return !!deletedRows;
   }
 
-  async findAll(limit, withComments) {
+  async findAll(withComments) {
     const include = [Aliase.CATEGORIES];
 
     if (withComments) {
       include.push(Aliase.COMMENTS);
     }
 
+    const offers = await this._Offer.findAll({include});
+
+    return offers.map((offer) => offer.get());
+  }
+
+  async findLast(limit) {
+
     const offers = await this._Offer.findAll({
       limit,
-      include,
-      attributes: {
-        include: [Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)), `count`],
-      },
+      include: [Aliase.CATEGORIES],
+      distinct: true,
       order: [[`createdAt`, `DESC`]]
     });
 
@@ -44,25 +50,23 @@ class OfferService {
   }
 
   async findPopular(limit) {
-    const offers = await this._Offer.findAll({
-      limit,
-      group: [`Offer.id`],
-      attributes: {
-        include: [Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)), `count`]
-      },
-      include: [
-        {
-          model: this._Comment,
-          as: Aliase.COMMENTS,
-          attributes: [],
-        },
-        {model: this._Category,
-          as: Aliase.CATEGORIES},
-      ],
-      order: [[`count`, `DESC`]],
-    });
 
-    return offers.map((offer) => offer.get());
+    const offers = await this._sequelize.query(`
+    SELECT offers.id, picture, title, sum, type, description, offers."createdAt",
+      jsonb_agg(DISTINCT jsonb_build_object('id', categories.id, 'name', categories.name)) AS categories,
+      count(DISTINCT comments.id) AS "commentsCount"
+    FROM offers
+      JOIN offer_categories ON offers.id = offer_categories."OfferId"
+      JOIN categories ON offer_categories."CategoryId" = categories.id
+      LEFT JOIN comments ON comments."offerId" = offers.id
+      GROUP BY offers.id
+      ORDER BY "commentsCount" DESC
+      LIMIT ${limit}
+    `, {type: Sequelize.QueryTypes.SELECT});
+
+    console.log(offers);
+
+    return offers;
   }
 
   async findOne(id, withComments) {
