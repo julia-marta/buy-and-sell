@@ -1,10 +1,9 @@
 "use strict";
 
 const defineModels = require(`../models`);
-const Aliase = require(`../models/aliase`);
 
-module.exports = async (sequelize, {offers, categories}) => {
-  const {Category, Offer} = defineModels(sequelize);
+module.exports = async (sequelize, {offers, categories, users, comments}) => {
+  const {Category, Offer, User, Comment} = defineModels(sequelize);
   await sequelize.sync({force: true});
 
   const categoryModels = await Category.bulkCreate(
@@ -16,11 +15,15 @@ module.exports = async (sequelize, {offers, categories}) => {
     ...acc
   }), {});
 
+  await User.bulkCreate(users);
+
   const offerPromises = offers.map(async (offer) => {
-    const offerModel = await Offer.create(offer, {include: [Aliase.COMMENTS]});
+    const offerModel = await Offer.create(offer);
     await offerModel.addCategories(
         offer.categories.map((category) => categoryIdByName[category])
     );
   });
   await Promise.all(offerPromises);
+
+  await Comment.bulkCreate(comments);
 };

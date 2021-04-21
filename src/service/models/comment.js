@@ -17,9 +17,10 @@ const define = (sequelize) => Comment.init({
 
 const defineRelations = (models) => {
 
-  const {Offer} = models;
+  const {Offer, User} = models;
 
   Comment.belongsTo(Offer, {foreignKey: `offerId`});
+  Comment.belongsTo(User, {foreignKey: `userId`});
 };
 
 module.exports = {define, defineRelations};
