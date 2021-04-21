@@ -8,7 +8,7 @@ const search = require(`./search`);
 const DataService = require(`../data-service/search`);
 const serviceLocatorFactory = require(`../lib/service-locator`);
 const {getLogger} = require(`../lib/test-logger`);
-const {mockOffers, mockCategories} = require(`./search.test-data`);
+const {mockOffers, mockCategories, mockUsers, mockComments} = require(`./search.test-data`);
 const {HttpCode} = require(`../../const`);
 
 const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
@@ -19,7 +19,7 @@ const logger = getLogger();
 app.use(express.json());
 
 beforeAll(async () => {
-  await initDB(mockDB, {categories: mockCategories, offers: mockOffers});
+  await initDB(mockDB, {categories: mockCategories, offers: mockOffers, users: mockUsers, comments: mockComments});
   serviceLocator.register(`app`, app);
   serviceLocator.register(`logger`, logger);
   serviceLocator.register(`searchService`, new DataService(mockDB));

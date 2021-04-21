@@ -13,7 +13,7 @@ const {HttpCode, UserMessage, LoginMessage} = require(`../../const`);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-  await initDB(mockDB, {categories: [], offers: []});
+  await initDB(mockDB, {categories: [], offers: [], users: [], comments: []});
   const serviceLocator = serviceLocatorFactory();
   const app = express();
   const logger = getLogger();

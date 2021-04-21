@@ -9,12 +9,12 @@ const OfferService = require(`../data-service/offer`);
 const CategoryService = require(`../data-service/category`);
 const serviceLocatorFactory = require(`../lib/service-locator`);
 const {getLogger} = require(`../lib/test-logger`);
-const {mockOffers, mockCategories, mockOffer} = require(`./offers.test-data`);
+const {mockOffers, mockCategories, mockUsers, mockComments, mockOffer} = require(`./offers.test-data`);
 const {HttpCode, OfferMessage} = require(`../../const`);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-  await initDB(mockDB, {categories: mockCategories, offers: mockOffers});
+  await initDB(mockDB, {categories: mockCategories, offers: mockOffers, users: mockUsers, comments: mockComments});
   const serviceLocator = serviceLocatorFactory();
   const app = express();
   const logger = getLogger();
