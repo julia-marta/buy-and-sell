@@ -24,8 +24,8 @@ class API {
     return response.data;
   }
 
-  getOffers({comments, limit, popular, last} = {}) {
-    return this._load(`/offers`, {params: {comments, limit, popular, last}});
+  getOffers({limit, popular, last, userId, comments} = {}) {
+    return this._load(`/offers`, {params: {limit, popular, last, userId, comments}});
   }
 
   getOffersByCategory(id, {offset, limit} = {}) {
@@ -48,9 +48,10 @@ class API {
     return this._load(`/categories/${id}`);
   }
 
-  createOffer(data) {
+  createOffer(userId, data) {
     return this._load(`/offers`, {
       method: `POST`,
+      params: {userId},
       data
     });
   }
@@ -62,9 +63,10 @@ class API {
     });
   }
 
-  createComment(id, data) {
+  createComment(id, userId, data) {
     return this._load(`/offers/${id}/comments`, {
       method: `POST`,
+      params: {userId},
       data
     });
   }

@@ -20,7 +20,7 @@ module.exports = (serviceLocator) => {
   app.use(`/offers`, route);
 
   route.get(`/`, async (req, res) => {
-    const {limit, popular, last, comments = false} = req.query;
+    const {limit, popular, last, userId, comments = false} = req.query;
 
     let result;
 
@@ -28,8 +28,10 @@ module.exports = (serviceLocator) => {
       result = await service.findPopular(limit);
     } else if (last) {
       result = await service.findLast(limit);
+    } else if (userId) {
+      result = await service.findAllByUser(userId, comments);
     } else {
-      result = await service.findAll(comments);
+      result = await service.findAll();
     }
 
     return res.status(HttpCode.OK).json(result);
@@ -56,7 +58,9 @@ module.exports = (serviceLocator) => {
   });
 
   route.post(`/`, isOfferValid, async (req, res) => {
-    const offer = await service.create(req.body);
+    const {userId} = req.query;
+
+    const offer = await service.create(userId, req.body);
 
     return res.status(HttpCode.CREATED).json(offer);
   });

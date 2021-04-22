@@ -1,6 +1,7 @@
 "use strict";
 
 const {DataTypes, Model} = require(`sequelize`);
+const Aliase = require(`./aliase`);
 
 class Comment extends Model {}
 
@@ -19,8 +20,8 @@ const defineRelations = (models) => {
 
   const {Offer, User} = models;
 
-  Comment.belongsTo(Offer, {foreignKey: `offerId`});
-  Comment.belongsTo(User, {foreignKey: `userId`});
+  Comment.belongsTo(Offer, {foreignKey: `offerId`, as: Aliase.OFFERS});
+  Comment.belongsTo(User, {foreignKey: `userId`, as: Aliase.USERS});
 };
 
 module.exports = {define, defineRelations};

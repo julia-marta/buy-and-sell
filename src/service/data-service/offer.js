@@ -12,10 +12,21 @@ class OfferService {
     this._sequelize = sequelize;
   }
 
-  async create(offerData) {
-    const offer = await this._Offer.create(offerData);
+  async create(userId, offerData) {
+    const offer = await this._Offer.create({userId, ...offerData});
     await offer.addCategories(offerData.categories);
     return offer.get();
+  }
+
+  async update(id, offer) {
+    const [affectedRows] = await this._Offer.update(offer, {
+      where: {id}
+    });
+
+    const updatedOffer = await this._Offer.findByPk(id);
+    await updatedOffer.setCategories(offer.categories);
+
+    return !!affectedRows;
   }
 
   async drop(id) {
@@ -25,14 +36,9 @@ class OfferService {
     return !!deletedRows;
   }
 
-  async findAll(withComments) {
-    const include = [Aliase.CATEGORIES];
+  async findAll() {
 
-    if (withComments) {
-      include.push(Aliase.COMMENTS);
-    }
-
-    const offers = await this._Offer.findAll({include});
+    const offers = await this._Offer.findAll({include: [Aliase.CATEGORIES]});
 
     return offers.map((offer) => offer.get());
   }
@@ -64,16 +70,18 @@ class OfferService {
       LIMIT ${limit}
     `, {type: Sequelize.QueryTypes.SELECT});
 
-    console.log(offers);
-
     return offers;
   }
 
   async findOne(id, withComments) {
-    const include = [Aliase.CATEGORIES];
+    const include = [Aliase.CATEGORIES, Aliase.USERS];
 
     if (withComments) {
-      include.push(Aliase.COMMENTS);
+      include.push({
+        model: this._Comment,
+        as: Aliase.COMMENTS,
+        include: [Aliase.USERS],
+      });
     }
 
     return this._Offer.findByPk(id, {include});
@@ -113,15 +121,24 @@ class OfferService {
     return offers.map((offer) => offer.get());
   }
 
-  async update(id, offer) {
-    const [affectedRows] = await this._Offer.update(offer, {
-      where: {id}
+  async findAllByUser(id, withComments) {
+    const include = [Aliase.CATEGORIES];
+
+    if (withComments) {
+      include.push({
+        model: this._Comment,
+        as: Aliase.COMMENTS,
+        include: [Aliase.USERS],
+      });
+    }
+
+    const offers = await this._Offer.findAll({
+      include,
+      where: {userId: id},
+      order: [[`createdAt`, `DESC`]]
     });
 
-    const updatedOffer = await this._Offer.findByPk(id);
-    await updatedOffer.setCategories(offer.categories);
-
-    return !!affectedRows;
+    return offers.map((offer) => offer.get());
   }
 }
 

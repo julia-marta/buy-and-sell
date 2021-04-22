@@ -34,7 +34,7 @@ const defineRelations = (models) => {
   const {Comment, User, Category, OfferCategory} = models;
 
   Offer.hasMany(Comment, {as: Aliase.COMMENTS, foreignKey: `offerId`});
-  Offer.belongsTo(User, {foreignKey: `userId`});
+  Offer.belongsTo(User, {as: Aliase.USERS, foreignKey: `userId`});
   Offer.belongsToMany(Category, {through: OfferCategory, as: Aliase.CATEGORIES});
   Offer.hasMany(OfferCategory, {as: Aliase.OFFER_CATEGORIES});
 };

@@ -57,6 +57,7 @@ offersRouter.get(`/add`, privateRoute, async (req, res, next) => {
 offersRouter.post(`/add`, [privateRoute, upload.single(`avatar`)], async (req, res) => {
 
   const {body, file} = req;
+  const userId = req.session.loggedUser.id;
 
   const offerData = {
     picture: file ? file.filename : DEFAULT_IMAGE,
@@ -68,7 +69,7 @@ offersRouter.post(`/add`, [privateRoute, upload.single(`avatar`)], async (req, r
   };
 
   try {
-    await api.createOffer(offerData);
+    await api.createOffer(userId, offerData);
     return res.redirect(`/my`);
   } catch (error) {
     req.session.offer = offerData;
@@ -152,6 +153,7 @@ offersRouter.get(`/:id`, async (req, res, next) => {
 offersRouter.post(`/:id`, [privateRoute, upload.single(`avatar`)], async (req, res) => {
 
   const {id} = req.params;
+  const userId = req.session.loggedUser.id;
   const {body} = req;
 
   const commentData = {
@@ -159,7 +161,7 @@ offersRouter.post(`/:id`, [privateRoute, upload.single(`avatar`)], async (req, r
   };
 
   try {
-    await api.createComment(id, commentData);
+    await api.createComment(id, userId, commentData);
     return res.redirect(`back`);
   } catch (error) {
     req.session.errorMessages = error.response.data.errorMessages;

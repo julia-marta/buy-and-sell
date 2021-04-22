@@ -41,7 +41,9 @@ module.exports = (serviceLocator) => {
 
   route.post(`/`, [isOfferExist, isCommentValid], async (req, res) => {
     const {offer} = res.locals;
-    const comment = await commentService.create(offer.id, req.body);
+    const {userId} = req.query;
+
+    const comment = await commentService.create(offer.id, userId, req.body);
 
     return res.status(HttpCode.CREATED).json(comment);
   });

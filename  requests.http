@@ -75,12 +75,12 @@ GET http://localhost:3000/api/offers/9Pyaks/comments HTTP/1.1
 ###
 
 # Удаление комментария
-DELETE http://localhost:3000/api/offers/9Pyaks/comments/0kq9DK HTTP/1.1
+DELETE http://localhost:3000/api/offers/5/comments/34 HTTP/1.1
 
 ###
 
 # Добавление нового комментария
-POST http://localhost:3000/api/offers/9Pyaks/comments HTTP/1.1
+POST http://localhost:3000/api/offers/1/comments HTTP/1.1
 Content-Type: application/json
 
 {
@@ -90,7 +90,7 @@ Content-Type: application/json
 ###
 
 # Добавление нового комментария с лишним полем
-POST http://localhost:3000/api/offers/9Pyaks/comments HTTP/1.1
+POST http://localhost:3000/api/offers/1/comments HTTP/1.1
 Content-Type: application/json
 
 {
