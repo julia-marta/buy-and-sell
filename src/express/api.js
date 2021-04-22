@@ -24,8 +24,20 @@ class API {
     return response.data;
   }
 
-  getOffers({limit, popular, last, userId, comments} = {}) {
-    return this._load(`/offers`, {params: {limit, popular, last, userId, comments}});
+  getOffers() {
+    return this._load(`/offers`);
+  }
+
+  getPopularOffers({limit} = {}) {
+    return this._load(`/offers/popular`, {params: {limit}});
+  }
+
+  getLastOffers({limit} = {}) {
+    return this._load(`/offers/last`, {params: {limit}});
+  }
+
+  getUserOffers({userId, comments} = {}) {
+    return this._load(`/offers/user`, {params: {userId, comments}});
   }
 
   getOffersByCategory(id, {offset, limit} = {}) {

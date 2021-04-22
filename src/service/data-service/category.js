@@ -33,11 +33,11 @@ class CategoryService {
     return result.map((it) => it.get());
   }
 
-  async findOne(id) {
+  findOne(id) {
     return this._Category.findByPk(id);
   }
 
-  async findAll() {
+  findAll() {
     return this._Category.findAll({raw: true});
   }
 }

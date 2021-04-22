@@ -22,21 +22,34 @@ module.exports = (serviceLocator) => {
   app.use(`/offers`, route);
 
   route.get(`/`, async (req, res) => {
-    const {limit, popular, last, userId, comments = false} = req.query;
 
-    let result;
+    const offers = await service.findAll();
 
-    if (popular) {
-      result = await service.findPopular(limit);
-    } else if (last) {
-      result = await service.findLast(limit);
-    } else if (userId) {
-      result = await service.findAllByUser(userId, comments);
-    } else {
-      result = await service.findAll();
-    }
+    return res.status(HttpCode.OK).json(offers);
+  });
 
-    return res.status(HttpCode.OK).json(result);
+  route.get(`/popular`, async (req, res) => {
+    const {limit} = req.query;
+
+    const popularOffers = await service.findPopular(limit);
+
+    return res.status(HttpCode.OK).json(popularOffers);
+  });
+
+  route.get(`/last`, async (req, res) => {
+    const {limit} = req.query;
+
+    const lastOffers = await service.findLast(limit);
+
+    return res.status(HttpCode.OK).json(lastOffers);
+  });
+
+  route.get(`/user`, async (req, res) => {
+    const {userId, comments = false} = req.query;
+
+    const userOffers = await service.findAllByUser(userId, comments);
+
+    return res.status(HttpCode.OK).json(userOffers);
   });
 
   route.get(`/category/:categoryId`, async (req, res) => {

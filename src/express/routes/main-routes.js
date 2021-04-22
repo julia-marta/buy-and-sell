@@ -20,8 +20,8 @@ mainRouter.get(`/`, async (req, res, next) => {
 
   try {
     const [lastOffers, popularOffers, categories] = await Promise.all([
-      api.getOffers({limit, last: true}),
-      api.getOffers({limit, popular: true}),
+      api.getLastOffers({limit}),
+      api.getPopularOffers({limit}),
       api.getCategories({count: true})
     ]);
 
