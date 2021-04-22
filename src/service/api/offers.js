@@ -4,6 +4,7 @@ const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
 const schemaValidator = require(`../middlewares/schema-validator`);
 const offerExists = require(`../middlewares/offer-exists`);
+const userOwner = require(`../middlewares/user-owner`);
 const offerSchema = require(`../schemas/offer`);
 
 module.exports = (serviceLocator) => {
@@ -16,6 +17,7 @@ module.exports = (serviceLocator) => {
 
   const isOfferExist = offerExists(service, logger);
   const isOfferValid = schemaValidator(offerSchema, logger, categoryService);
+  const isOfferBelongsToUser = userOwner(service, logger);
 
   app.use(`/offers`, route);
 
@@ -73,7 +75,7 @@ module.exports = (serviceLocator) => {
     return res.status(HttpCode.OK).send(`Offer was updated`);
   });
 
-  route.delete(`/:offerId`, isOfferExist, async (req, res) => {
+  route.delete(`/:offerId`, [isOfferExist, isOfferBelongsToUser], async (req, res) => {
     const {offerId} = req.params;
 
     await service.drop(offerId);

@@ -139,7 +139,7 @@ describe(`API correctly deletes a comment`, () => {
 
   beforeAll(async () => {
     app = await createAPI();
-    response = await request(app).delete(`/offers/1/comments/3`);
+    response = await request(app).delete(`/offers/1/comments/3`).query({userId: 1});
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
@@ -160,7 +160,7 @@ describe(`API refuses to delete a comment`, () => {
 
   test(`When trying to delete non-existent comment response code is 404`, () => {
 
-    return request(app).delete(`/offers/1/comments/50`)
+    return request(app).delete(`/offers/1/comments/50`).query({userId: 1})
       .expect(HttpCode.NOT_FOUND);
   });
 
@@ -168,5 +168,11 @@ describe(`API refuses to delete a comment`, () => {
 
     return request(app).delete(`/offers/NOEXIST/comments/1`)
       .expect(HttpCode.NOT_FOUND);
+  });
+
+  test(`When trying to delete a comment to offer not owned by user response code is 403`, async () => {
+
+    return request(app).delete(`/offers/1/comments/3`).query({userId: 2})
+    .expect(HttpCode.FORBIDDEN);
   });
 });

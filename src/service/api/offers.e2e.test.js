@@ -305,7 +305,7 @@ describe(`API correctly deletes an offer`, () => {
 
   beforeAll(async () => {
     app = await createAPI();
-    response = await request(app).delete(`/offers/3`);
+    response = await request(app).delete(`/offers/3`).query({userId: 1});
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
@@ -315,12 +315,23 @@ describe(`API correctly deletes an offer`, () => {
   );
 });
 
-describe(`API refuses to delete non-existent offer`, () => {
+describe(`API refuses to delete offer`, () => {
+
+  let app;
+
+  beforeAll(async () => {
+    app = await createAPI();
+  });
 
   test(`When trying to delete non-existent offer response code is 404`, async () => {
-    const app = await createAPI();
 
     return request(app).delete(`/offers/NOEXIST`)
     .expect(HttpCode.NOT_FOUND);
+  });
+
+  test(`When trying to delete offer not owned by user response code is 403`, async () => {
+
+    return request(app).delete(`/offers/3`).query({userId: 2})
+    .expect(HttpCode.FORBIDDEN);
   });
 });
