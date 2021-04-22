@@ -73,14 +73,10 @@ module.exports = (serviceLocator) => {
     return res.status(HttpCode.OK).send(`Offer was updated`);
   });
 
-  route.delete(`/:offerId`, async (req, res) => {
+  route.delete(`/:offerId`, isOfferExist, async (req, res) => {
     const {offerId} = req.params;
-    const deleted = await service.drop(offerId);
 
-    if (!deleted) {
-      res.status(HttpCode.NOT_FOUND).send(`Offer with ${offerId} not found`);
-      return logger.error(`Offer not found: ${offerId}`);
-    }
+    await service.drop(offerId);
 
     return res.status(HttpCode.OK).send(`Offer was deleted`);
   });

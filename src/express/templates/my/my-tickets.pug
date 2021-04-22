@@ -11,18 +11,19 @@ block content
         ul
           each offer, index in offers
             li.tickets-list__item.js-card
-              div(class=`ticket-card ticket-card--color${index >= 9 ? index + 1 : `0${index + 1}`}`)
-                .ticket-card__img
-                  img(src=`${offer.picture !== `` ? `/img/${offer.picture}` : `/img/blank.png`}` alt=offer.title)
-                .ticket-card__info
-                  +ticketLabel(offer.type)
-                  .ticket-card__categories
-                    each category in offer.categories
-                      a(href="#") #{category.name}
-                  .ticket-card__header
-                    h3.ticket-card__title
-                      a(href=`/offers/edit/${offer.id}`) #{offer.title}
-                    p.ticket-card__price
-                      span.js-sum #{offer.sum}
-                      |  ₽
-                button.ticket-card__del.js-delete(type="button") Удалить
+              form(action=`/my/${offer.id}`, method="post")
+                div(class=`ticket-card ticket-card--color${index >= 9 ? index + 1 : `0${index + 1}`}`)
+                  .ticket-card__img
+                    img(src=`${offer.picture !== `` ? `/img/${offer.picture}` : `/img/blank.png`}` alt=offer.title)
+                  .ticket-card__info
+                    +ticketLabel(offer.type)
+                    .ticket-card__categories
+                      each category in offer.categories
+                        a(href="#") #{category.name}
+                    .ticket-card__header
+                      h3.ticket-card__title
+                        a(href=`/offers/edit/${offer.id}`) #{offer.title}
+                      p.ticket-card__price
+                        span.js-sum #{offer.sum}
+                        |  ₽
+                  button.ticket-card__del(type="submit") Удалить

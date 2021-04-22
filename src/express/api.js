@@ -63,11 +63,25 @@ class API {
     });
   }
 
+  deleteOffer(offerId, userId) {
+    return this._load(`/offers/${offerId}`, {
+      method: `DELETE`,
+      params: {userId},
+    });
+  }
+
   createComment(id, userId, data) {
     return this._load(`/offers/${id}/comments`, {
       method: `POST`,
       params: {userId},
       data
+    });
+  }
+
+  deleteComment(id, offerId, userId) {
+    return this._load(`/offers/${offerId}/comments/${id}`, {
+      method: `DELETE`,
+      params: {userId},
     });
   }
 

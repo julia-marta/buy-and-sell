@@ -18,12 +18,38 @@ myRouter.get(`/`, privateRoute, async (req, res, next) => {
   }
 });
 
+myRouter.post(`/:offerId`, privateRoute, async (req, res, next) => {
+
+  const {offerId} = req.params;
+  const userId = req.session.loggedUser.id;
+
+  try {
+    await api.deleteOffer(offerId, userId);
+    res.redirect(`back`);
+  } catch (err) {
+    next(err);
+  }
+});
+
 myRouter.get(`/comments`, privateRoute, async (req, res, next) => {
   const userId = req.session.loggedUser.id;
 
   try {
     const offers = await api.getOffers({userId, comments: true});
     res.render(`my/comments`, {offers, myCommentsIsCurrent: true});
+  } catch (err) {
+    next(err);
+  }
+});
+
+myRouter.post(`/:offerId/comments/:id`, privateRoute, async (req, res, next) => {
+
+  const {offerId, id} = req.params;
+  const userId = req.session.loggedUser.id;
+
+  try {
+    await api.deleteComment(id, offerId, userId);
+    res.redirect(`back`);
   } catch (err) {
     next(err);
   }

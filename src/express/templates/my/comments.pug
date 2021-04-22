@@ -16,12 +16,13 @@ block content
             ul.comments-list
               each comment in offer.comments
                 li.js-card
-                  .comment-card
-                    .comment-card__header
-                      a.comment-card__avatar.avatar(href="#")
-                        img(src=`/img/${comment.users.avatar}` alt="Аватар пользователя")
-                      p.comment-card__author #{comment.users.firstname} #{comment.users.lastname}
-                    .comment-card__content
-                      p
-                        | #{comment.text}
-                    button.comment-card__delete.js-delete(type="button") Удалить
+                  form(action=`/my/${offer.id}/comments/${comment.id}`, method="post")
+                    .comment-card
+                      .comment-card__header
+                        a.comment-card__avatar.avatar(href="#")
+                          img(src=`/img/${comment.users.avatar}` alt="Аватар пользователя")
+                        p.comment-card__author #{comment.users.firstname} #{comment.users.lastname}
+                      .comment-card__content
+                        p
+                          | #{comment.text}
+                      button.comment-card__delete(type="submit") Удалить
