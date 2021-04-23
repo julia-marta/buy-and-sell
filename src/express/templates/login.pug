@@ -3,16 +3,23 @@ extends layout.pug
 block content
   main.page-content
     section.login
-      form.login__form.form(action="#", method="post", enctype="multipart/form-data")
+      form.login__form.form(action="/login", method="post", enctype="multipart/form-data")
+        input(type="hidden" name="csrf" value=csrfToken)
         .login__title
           a.login__link(href="/register") Регистрация
           h2 Вход
         .form__field.login__field
-          input#user-email.js-field(type="email", name="user-email", required)
+          input#user-email.js-field(type="email", name="user-email", value=(userEmail ? userEmail : ``))
           label(for="user-email") Эл. почта
           span Обязательное поле
         .form__field.login__field
-          input#user-password.js-field(type="password", name="user-password", required)
+          input#user-password.js-field(type="password", name="user-password")
           label(for="user-password") Пароль
           span Обязательное поле
+        if errorMessages
+          .form__field.login__field
+            p(style={color: `white`}) При авторизации произошли ошибки:
+              ul(style={color: `white`})
+                each error in errorMessages
+                  li #{error}
         button.login__button.btn.btn--medium.js-button(type="submit", disabled) Войти

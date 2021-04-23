@@ -5,9 +5,10 @@ class CommentService {
     this._Comment = sequelize.models.Comment;
   }
 
-  async create(offerId, comment) {
+  async create(offerId, userId, comment) {
     const newComment = await this._Comment.create({
       offerId,
+      userId,
       ...comment
     });
     return newComment.get();

@@ -24,8 +24,24 @@ class API {
     return response.data;
   }
 
-  getOffers({offset, limit, comments} = {}) {
-    return this._load(`/offers`, {params: {offset, limit, comments}});
+  getOffers() {
+    return this._load(`/offers`);
+  }
+
+  getPopularOffers({limit} = {}) {
+    return this._load(`/offers/popular`, {params: {limit}});
+  }
+
+  getLastOffers({limit} = {}) {
+    return this._load(`/offers/last`, {params: {limit}});
+  }
+
+  getUserOffers({userId, comments} = {}) {
+    return this._load(`/offers/user`, {params: {userId, comments}});
+  }
+
+  getOffersByCategory(id, {offset, limit} = {}) {
+    return this._load(`/offers/category/${id}`, {params: {offset, limit}});
   }
 
   getOffer(id, {comments} = {}) {
@@ -40,9 +56,14 @@ class API {
     return this._load(`/categories`, {params: {count}});
   }
 
-  createOffer(data) {
+  getCategory(id) {
+    return this._load(`/categories/${id}`);
+  }
+
+  createOffer(userId, data) {
     return this._load(`/offers`, {
       method: `POST`,
+      params: {userId},
       data
     });
   }
@@ -54,15 +75,37 @@ class API {
     });
   }
 
-  createComment(id, data) {
+  deleteOffer(offerId, userId) {
+    return this._load(`/offers/${offerId}`, {
+      method: `DELETE`,
+      params: {userId},
+    });
+  }
+
+  createComment(id, userId, data) {
     return this._load(`/offers/${id}/comments`, {
       method: `POST`,
+      params: {userId},
       data
+    });
+  }
+
+  deleteComment(id, offerId, userId) {
+    return this._load(`/offers/${offerId}/comments/${id}`, {
+      method: `DELETE`,
+      params: {userId},
     });
   }
 
   createUser(data) {
     return this._load(`/user`, {
+      method: `POST`,
+      data
+    });
+  }
+
+  loginUser(data) {
+    return this._load(`/user/login`, {
       method: `POST`,
       data
     });

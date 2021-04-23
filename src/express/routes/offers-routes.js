@@ -3,15 +3,44 @@
 const {Router} = require(`express`);
 const apiFactory = require(`../api`);
 const {upload} = require(`../middlewares/multer`);
-const {getRandomInt} = require(`../../utils`);
-const {DEFAULT_IMAGE, CategoryImageName} = require(`../../const`);
+const privateRoute = require(`../middlewares/private-route`);
+const {getRandomInt, getPagerRange} = require(`../../utils`);
+const {DEFAULT_IMAGE, CategoryImageName, OFFERS_PER_PAGE, PAGER_WIDTH} = require(`../../const`);
 const offersRouter = new Router();
 
 const api = apiFactory.getAPI();
 
-offersRouter.get(`/category/:id`, (req, res) => res.render(`offers/category`));
+offersRouter.get(`/category/:id`, async (req, res, next) => {
+  const {id} = req.params;
+  let {page = 1} = req.query;
+  page = +page;
+  const limit = OFFERS_PER_PAGE;
+  const offset = (page - 1) * OFFERS_PER_PAGE;
 
-offersRouter.get(`/add`, async (req, res, next) => {
+  try {
+    const [{count, offers}, currentCategory, categories] = await Promise.all([
+      api.getOffersByCategory(id, {limit, offset}),
+      api.getCategory(id),
+      api.getCategories({count: true})
+    ]);
+
+    const images = Array(categories.length).fill().map(() => (
+      getRandomInt(CategoryImageName.MIN, CategoryImageName.MAX)
+    ));
+
+    const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
+    const range = getPagerRange(page, totalPages, PAGER_WIDTH);
+    const withPagination = totalPages > 1;
+
+    res.render(`offers/category`, {currentCategory, count, offers, categories, images, page, totalPages, range, withPagination});
+  } catch (err) {
+
+    next(err);
+  }
+
+});
+
+offersRouter.get(`/add`, privateRoute, async (req, res, next) => {
 
   const {offer = null, errorMessages = null} = req.session;
 
@@ -25,9 +54,10 @@ offersRouter.get(`/add`, async (req, res, next) => {
   }
 });
 
-offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
+offersRouter.post(`/add`, [privateRoute, upload.single(`avatar`)], async (req, res) => {
 
   const {body, file} = req;
+  const userId = req.session.loggedUser.id;
 
   const offerData = {
     picture: file ? file.filename : DEFAULT_IMAGE,
@@ -39,7 +69,7 @@ offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
   };
 
   try {
-    await api.createOffer(offerData);
+    await api.createOffer(userId, offerData);
     return res.redirect(`/my`);
   } catch (error) {
     req.session.offer = offerData;
@@ -49,7 +79,7 @@ offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
   }
 });
 
-offersRouter.get(`/edit/:id`, async (req, res, next) => {
+offersRouter.get(`/edit/:id`, privateRoute, async (req, res, next) => {
   const {id} = req.params;
   const {newData = null, errorMessages = null} = req.session;
 
@@ -76,7 +106,7 @@ offersRouter.get(`/edit/:id`, async (req, res, next) => {
   }
 });
 
-offersRouter.post(`/edit/:id`, upload.single(`avatar`), async (req, res) => {
+offersRouter.post(`/edit/:id`, [privateRoute, upload.single(`avatar`)], async (req, res) => {
   const {id} = req.params;
   const {body, file} = req;
 
@@ -120,9 +150,10 @@ offersRouter.get(`/:id`, async (req, res, next) => {
   }
 });
 
-offersRouter.post(`/:id`, upload.single(`avatar`), async (req, res) => {
+offersRouter.post(`/:id`, [privateRoute, upload.single(`avatar`)], async (req, res) => {
 
   const {id} = req.params;
+  const userId = req.session.loggedUser.id;
   const {body} = req;
 
   const commentData = {
@@ -130,7 +161,7 @@ offersRouter.post(`/:id`, upload.single(`avatar`), async (req, res) => {
   };
 
   try {
-    await api.createComment(id, commentData);
+    await api.createComment(id, userId, commentData);
     return res.redirect(`back`);
   } catch (error) {
     req.session.errorMessages = error.response.data.errorMessages;

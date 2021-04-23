@@ -4,6 +4,7 @@ const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
 const schemaValidator = require(`../middlewares/schema-validator`);
 const offerExists = require(`../middlewares/offer-exists`);
+const userOwner = require(`../middlewares/user-owner`);
 const offerSchema = require(`../schemas/offer`);
 
 module.exports = (serviceLocator) => {
@@ -16,17 +17,50 @@ module.exports = (serviceLocator) => {
 
   const isOfferExist = offerExists(service, logger);
   const isOfferValid = schemaValidator(offerSchema, logger, categoryService);
+  const isOfferBelongsToUser = userOwner(service, logger);
 
   app.use(`/offers`, route);
 
   route.get(`/`, async (req, res) => {
-    const {offset, limit, comments = false} = req.query;
+
+    const offers = await service.findAll();
+
+    return res.status(HttpCode.OK).json(offers);
+  });
+
+  route.get(`/popular`, async (req, res) => {
+    const {limit} = req.query;
+
+    const popularOffers = await service.findPopular(limit);
+
+    return res.status(HttpCode.OK).json(popularOffers);
+  });
+
+  route.get(`/last`, async (req, res) => {
+    const {limit} = req.query;
+
+    const lastOffers = await service.findLast(limit);
+
+    return res.status(HttpCode.OK).json(lastOffers);
+  });
+
+  route.get(`/user`, async (req, res) => {
+    const {userId, comments = false} = req.query;
+
+    const userOffers = await service.findAllByUser(userId, comments);
+
+    return res.status(HttpCode.OK).json(userOffers);
+  });
+
+  route.get(`/category/:categoryId`, async (req, res) => {
+    const {categoryId} = req.params;
+    const {offset, limit} = req.query;
     let result;
 
     if (limit || offset) {
-      result = await service.findPage({limit, offset});
+      result = await service.findPageByCategory({limit, offset, categoryId});
     } else {
-      result = await service.findAll(comments);
+      result = await service.findAllByCategory(categoryId);
     }
 
     return res.status(HttpCode.OK).json(result);
@@ -39,7 +73,9 @@ module.exports = (serviceLocator) => {
   });
 
   route.post(`/`, isOfferValid, async (req, res) => {
-    const offer = await service.create(req.body);
+    const {userId} = req.query;
+
+    const offer = await service.create(userId, req.body);
 
     return res.status(HttpCode.CREATED).json(offer);
   });
@@ -52,14 +88,10 @@ module.exports = (serviceLocator) => {
     return res.status(HttpCode.OK).send(`Offer was updated`);
   });
 
-  route.delete(`/:offerId`, async (req, res) => {
+  route.delete(`/:offerId`, [isOfferExist, isOfferBelongsToUser], async (req, res) => {
     const {offerId} = req.params;
-    const deleted = await service.drop(offerId);
 
-    if (!deleted) {
-      res.status(HttpCode.NOT_FOUND).send(`Offer with ${offerId} not found`);
-      return logger.error(`Offer not found: ${offerId}`);
-    }
+    await service.drop(offerId);
 
     return res.status(HttpCode.OK).send(`Offer was deleted`);
   });

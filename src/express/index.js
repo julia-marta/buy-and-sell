@@ -30,6 +30,11 @@ app.use(express.static(path.resolve(__dirname, UPLOAD_DIR)));
 app.set(`views`, path.resolve(__dirname, TEMPLATES_DIR));
 app.set(`view engine`, `pug`);
 
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  next();
+});
+
 app.use(`/offers`, offersRoutes);
 app.use(`/my`, myRoutes);
 app.use(`/`, mainRoutes);

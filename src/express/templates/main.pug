@@ -9,24 +9,9 @@ block content
         .tickets-list__header
           p.tickets-list__title Самое свежее
         ul
-          each offer, index in offers
+          each offer, index in lastOffers
             li.tickets-list__item
-              div(class=`ticket-card ticket-card--color${index >= 9 ? index + 1 : `0${index + 1}`}`)
-                .ticket-card__img
-                  img(src=`${offer.picture !== `` ? `/img/${offer.picture}` : `/img/blank.png`}` alt=offer.title)
-                .ticket-card__info
-                  +ticketLabel(offer.type)
-                  .ticket-card__categories
-                    each category in offer.categories
-                      a(href="#") #{category.name}
-                  .ticket-card__header
-                    h3.ticket-card__title
-                      a(href=`/offers/${offer.id}`) #{offer.title}
-                    p.ticket-card__price
-                      span.js-sum #{offer.sum}
-                      |  ₽
-                  .ticket-card__desc
-                    p #{offer.description}
+              include partials/ticket-card.pug
 
     section.tickets-list
       h2.visually-hidden Самые обсуждаемые предложения
@@ -34,23 +19,6 @@ block content
         .tickets-list__header
           p.tickets-list__title Самые обсуждаемые
         ul
-          each offer, index in offers
+          each offer, index in popularOffers
             li.tickets-list__item
-              div(class=`ticket-card ticket-card--color${index >= 9 ? index + 1 : `0${index + 1}`}`)
-                .ticket-card__img
-                  img(src=`${offer.picture !== `` ? `/img/${offer.picture}` : `/img/blank.png`}` alt=offer.title)
-                .ticket-card__info
-                  +ticketLabel(offer.type)
-                  .ticket-card__categories
-                    each category in offer.categories
-                      a(href="#") #{category.name}
-                  .ticket-card__header
-                    h3.ticket-card__title
-                      a(href=`/offers/${offer.id}`) #{offer.title}
-                    p.ticket-card__price
-                      span.js-sum #{offer.sum}
-                      |  ₽
-                  .ticket-card__desc
-                    p #{offer.description}
-  if withPagination
-    +pagination(page, totalPages, range, `?`)
+              include partials/ticket-card.pug

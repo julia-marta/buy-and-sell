@@ -13,6 +13,11 @@ GET http://localhost:3000/api/categories HTTP/1.1
 
 ###
 
+# Список объявлений по id категории
+GET http://localhost:3000/api/offers/category/7 HTTP/1.1
+
+###
+
 # Добавление нового объявления
 POST http://localhost:3000/api/offers HTTP/1.1
 Content-Type: application/json
@@ -70,12 +75,12 @@ GET http://localhost:3000/api/offers/9Pyaks/comments HTTP/1.1
 ###
 
 # Удаление комментария
-DELETE http://localhost:3000/api/offers/9Pyaks/comments/0kq9DK HTTP/1.1
+DELETE http://localhost:3000/api/offers/5/comments/34 HTTP/1.1
 
 ###
 
 # Добавление нового комментария
-POST http://localhost:3000/api/offers/9Pyaks/comments HTTP/1.1
+POST http://localhost:3000/api/offers/1/comments HTTP/1.1
 Content-Type: application/json
 
 {
@@ -85,7 +90,7 @@ Content-Type: application/json
 ###
 
 # Добавление нового комментария с лишним полем
-POST http://localhost:3000/api/offers/9Pyaks/comments HTTP/1.1
+POST http://localhost:3000/api/offers/1/comments HTTP/1.1
 Content-Type: application/json
 
 {
@@ -111,4 +116,15 @@ Content-Type: application/json
   "password": "qwerty12345",
   "repeat": "qwerty12345",
   "avatar": "myphoto.jpg"
+}
+
+###
+
+# Аутентификация юзера
+POST http://localhost:3000/api/user/login
+Content-Type: application/json
+
+{
+  "email": "marta237@ma.ru",
+  "password": "qwerty12345"
 }

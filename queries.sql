@@ -76,3 +76,15 @@ WHERE type = 'OFFER'
 UPDATE offers
 SET title = 'Уникальное предложение!'
 WHERE id = 1
+
+-- 8 самых обсуждаемых объявлений
+SELECT offers.id, title, sum, type, description, offers."createdAt",
+  jsonb_agg(DISTINCT jsonb_build_object('id', categories.id, 'name', categories.name)) AS categories,
+  count(DISTINCT comments.id) AS "commentsCount"
+FROM offers
+  JOIN offer_categories ON offers.id = offer_categories."OfferId"
+  JOIN categories ON offer_categories."CategoryId" = categories.id
+  LEFT JOIN comments ON comments."offerId" = offers.id
+GROUP BY offers.id
+ORDER BY "commentsCount" DESC
+LIMIT 8

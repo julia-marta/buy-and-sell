@@ -14,9 +14,9 @@ const define = (sequelize) => {
   const OfferCategory = OfferCategoryModel.define(sequelize);
   const User = UserModel.define(sequelize);
 
-  const models = [CategoryModel, CommentModel, OfferModel];
+  const models = [CategoryModel, CommentModel, OfferModel, UserModel];
 
-  models.forEach((model) => model.defineRelations({Comment, Category, OfferCategory, Offer}));
+  models.forEach((model) => model.defineRelations({Comment, Category, OfferCategory, Offer, User}));
 
   return {Category, Comment, Offer, OfferCategory, User};
 };
