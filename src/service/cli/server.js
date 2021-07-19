@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require(`express`);
+const http = require(`http`);
 const routes = require(`../api`);
 const {getLogger} = require(`../lib/logger`);
 const sequelize = require(`../lib/sequelize`);
@@ -16,6 +17,8 @@ const PortRestrict = {
 const logger = getLogger({name: `api`});
 
 const app = express();
+const server = http.createServer(app);
+
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -46,7 +49,7 @@ module.exports = {
 
     try {
 
-      const router = await routes(logger);
+      const router = await routes(logger, server);
       app.use(API_PREFIX, router);
 
       app.use((req, res) => {
@@ -58,7 +61,7 @@ module.exports = {
         logger.error(`An error occured on processing request: ${err.message}`);
       });
 
-      app.listen(port, (err) => {
+      server.listen(port, (err) => {
         if (err) {
           logger.error(`An error occured on server creation: ${err.message}`);
           process.exit(ExitCode.error);

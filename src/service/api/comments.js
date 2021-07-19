@@ -1,7 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {HttpCode} = require(`../../const`);
+const {HttpCode, OFFERS_PER_PAGE} = require(`../../const`);
 const schemaValidator = require(`../middlewares/schema-validator`);
 const offerExists = require(`../middlewares/offer-exists`);
 const userOwner = require(`../middlewares/user-owner`);
@@ -14,6 +14,7 @@ module.exports = (serviceLocator) => {
   const offerService = serviceLocator.get(`offerService`);
   const commentService = serviceLocator.get(`commentService`);
   const logger = serviceLocator.get(`logger`);
+  const socketService = serviceLocator.get(`socketService`);
 
   const isOfferExist = offerExists(offerService, logger);
   const isOfferBelongsToUser = userOwner(offerService, logger);
@@ -38,6 +39,13 @@ module.exports = (serviceLocator) => {
       return logger.error(`Comment not found: ${commentId}`);
     }
 
+    try {
+      const updatedPopularOffers = await offerService.findPopular(OFFERS_PER_PAGE);
+      socketService.updatePopular(updatedPopularOffers);
+    } catch (err) {
+      console.error(err);
+    }
+
     return res.status(HttpCode.OK).send(`Comment was deleted`);
   });
 
@@ -46,6 +54,13 @@ module.exports = (serviceLocator) => {
     const {userId} = req.query;
 
     const comment = await commentService.create(offer.id, userId, req.body);
+
+    try {
+      const updatedPopularOffers = await offerService.findPopular(OFFERS_PER_PAGE);
+      socketService.updatePopular(updatedPopularOffers);
+    } catch (err) {
+      console.error(err);
+    }
 
     return res.status(HttpCode.CREATED).json(comment);
   });

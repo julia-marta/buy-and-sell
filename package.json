@@ -9,8 +9,8 @@
     "eslint": "eslint --ext .js src/",
     "start": "concurrently \"npm:server\" \"npm:start-front-server\"",
     "start::debug": "concurrently \"npm:server::debug\" \"npm:start-front-server\"",
-    "server": "cross-env NODE_ENV=production LOG_LEVEL=error IS_DEV_MODE=false node -r dotenv/config ./src/service/service.js --server",
-    "server::debug": "cross-env node -r dotenv/config ./src/service/service.js --server",
+    "server": "cross-env NODE_ENV=production LOG_LEVEL=error IS_DEV_MODE=false nodemon -r dotenv/config ./src/service/service.js --server",
+    "server::debug": "cross-env nodemon -r dotenv/config ./src/service/service.js --server",
     "start-front-server": "cross-env nodemon -r dotenv/config ./src/express/index.js",
     "fill-db": "npm run start -- --filldb"
   },
@@ -49,6 +49,8 @@
     "pg": "8.5.1",
     "pino": "6.11.1",
     "pug": "2.0.4",
-    "sequelize": "6.5.0"
+    "sequelize": "6.5.0",
+    "socket.io": "4.1.3",
+    "socket.io-client": "4.1.3"
   }
 }

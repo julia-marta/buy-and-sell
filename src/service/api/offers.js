@@ -1,11 +1,11 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {HttpCode} = require(`../../const`);
 const schemaValidator = require(`../middlewares/schema-validator`);
 const offerExists = require(`../middlewares/offer-exists`);
 const userOwner = require(`../middlewares/user-owner`);
 const offerSchema = require(`../schemas/offer`);
+const {HttpCode, OFFERS_PER_PAGE} = require(`../../const`);
 
 module.exports = (serviceLocator) => {
   const route = new Router();
@@ -14,6 +14,7 @@ module.exports = (serviceLocator) => {
   const service = serviceLocator.get(`offerService`);
   const categoryService = serviceLocator.get(`categoryService`);
   const logger = serviceLocator.get(`logger`);
+  const socketService = serviceLocator.get(`socketService`);
 
   const isOfferExist = offerExists(service, logger);
   const isOfferValid = schemaValidator(offerSchema, logger, categoryService);
@@ -76,6 +77,9 @@ module.exports = (serviceLocator) => {
     const {userId} = req.query;
 
     const offer = await service.create(userId, req.body);
+    const updatedLastOffers = await service.findLast(OFFERS_PER_PAGE);
+
+    socketService.updateLast(updatedLastOffers);
 
     return res.status(HttpCode.CREATED).json(offer);
   });
@@ -92,6 +96,9 @@ module.exports = (serviceLocator) => {
     const {offerId} = req.params;
 
     await service.drop(offerId);
+    const updatedLastOffers = await service.findLast(OFFERS_PER_PAGE);
+
+    socketService.updateLast(updatedLastOffers);
 
     return res.status(HttpCode.OK).send(`Offer was deleted`);
   });

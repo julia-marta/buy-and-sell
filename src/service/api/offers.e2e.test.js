@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require(`express`);
+const http = require(`http`);
 const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 const initDB = require(`../lib/init-db`);
@@ -8,6 +9,7 @@ const offers = require(`./offers`);
 const OfferService = require(`../data-service/offer`);
 const CategoryService = require(`../data-service/category`);
 const serviceLocatorFactory = require(`../lib/service-locator`);
+const SocketService = require(`../lib/socket-service`);
 const {getLogger} = require(`../lib/test-logger`);
 const {mockOffers, mockCategories, mockUsers, mockComments, mockOffer} = require(`./offers.test-data`);
 const {HttpCode, OfferMessage} = require(`../../const`);
@@ -17,11 +19,13 @@ const createAPI = async () => {
   await initDB(mockDB, {categories: mockCategories, offers: mockOffers, users: mockUsers, comments: mockComments});
   const serviceLocator = serviceLocatorFactory();
   const app = express();
+  const server = http.createServer(app);
   const logger = getLogger();
   app.use(express.json());
 
   serviceLocator.register(`app`, app);
   serviceLocator.register(`logger`, logger);
+  serviceLocator.register(`socketService`, new SocketService(server));
   serviceLocator.register(`offerService`, new OfferService(mockDB));
   serviceLocator.register(`categoryService`, new CategoryService(mockDB));
   serviceLocator.factory(`offers`, offers);

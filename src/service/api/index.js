@@ -8,11 +8,12 @@ const search = require(`../api/search`);
 const user = require(`../api/user`);
 const serviceLocatorFactory = require(`../lib/service-locator`);
 const sequelize = require(`../lib/sequelize`);
+const SocketService = require(`../lib/socket-service`);
 const defineModels = require(`../models`);
 
 const {CategoryService, OfferService, CommentService, SearchService, UserService} = require(`../data-service`);
 
-module.exports = async (logger) => {
+module.exports = async (logger, server) => {
 
   const app = new Router();
   const serviceLocator = serviceLocatorFactory();
@@ -20,6 +21,7 @@ module.exports = async (logger) => {
 
   serviceLocator.register(`app`, app);
   serviceLocator.register(`logger`, logger);
+  serviceLocator.register(`socketService`, new SocketService(server));
   serviceLocator.register(`categoryService`, new CategoryService(sequelize));
   serviceLocator.register(`offerService`, new OfferService(sequelize));
   serviceLocator.register(`commentService`, new CommentService(sequelize));
