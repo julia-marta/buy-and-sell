@@ -87,10 +87,9 @@ offersRouter.get(`/edit/:id`, privateRoute, async (req, res, next) => {
     const categories = await api.getCategories();
     let offer;
 
-    if (newData) {
-      offer = {...newData, id};
-    } else {
-      offer = await api.getOffer(id);
+    offer = newData ? {...newData, id} : await api.getOffer(id);
+
+    if (!newData) {
       const offerCategories = offer.categories.reduce((acc, item) => ([
         item.id.toString(),
         ...acc

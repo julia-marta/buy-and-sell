@@ -58,11 +58,7 @@ module.exports = (serviceLocator) => {
     const {offset, limit} = req.query;
     let result;
 
-    if (limit || offset) {
-      result = await service.findPageByCategory({limit, offset, categoryId});
-    } else {
-      result = await service.findAllByCategory(categoryId);
-    }
+    result = (limit || offset) ? await service.findPageByCategory({limit, offset, categoryId}) : await service.findAllByCategory(categoryId);
 
     return res.status(HttpCode.OK).json(result);
   });

@@ -2,7 +2,7 @@
 
 const express = require(`express`);
 const http = require(`http`);
-const routes = require(`../api`);
+const createRouter = require(`../lib/create-router`);
 const {getLogger} = require(`../lib/logger`);
 const sequelize = require(`../lib/sequelize`);
 const {HttpCode, ExitCode, API_PREFIX} = require(`../../const`);
@@ -48,8 +48,7 @@ module.exports = {
     const port = portNumber >= PortRestrict.MIN && portNumber < PortRestrict.MAX ? portNumber : DEFAULT_PORT;
 
     try {
-
-      const router = await routes(logger, server);
+      const router = await createRouter(logger, server);
       app.use(API_PREFIX, router);
 
       app.use((req, res) => {

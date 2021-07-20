@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {OfferMessage, Type, Text, Title, MIN_PRICE, MIN_CATEGORIES_LENGTH} = require(`../../const`);
+const {Offer, OfferMessage} = require(`../../const`);
 
 module.exports = (categories) => {
   return Joi.object({
@@ -11,7 +11,7 @@ module.exports = (categories) => {
     .required(),
 
     sum: Joi.number()
-    .min(MIN_PRICE)
+    .min(Offer.MIN_PRICE)
     .required()
     .messages({
       'any.required': OfferMessage.REQUIRED.PRICE,
@@ -19,7 +19,7 @@ module.exports = (categories) => {
     }),
 
     type: Joi.string()
-    .valid(Type.OFFER, Type.SALE)
+    .valid(Offer.TYPE.OFFER, Offer.TYPE.SALE)
     .empty(``)
     .required()
     .messages({
@@ -28,8 +28,8 @@ module.exports = (categories) => {
     }),
 
     description: Joi.string()
-    .min(Text.MIN_LENGTH)
-    .max(Text.MAX_LENGTH)
+    .min(Offer.MIN_TEXT_LENGTH)
+    .max(Offer.MAX_TEXT_LENGTH)
     .empty(``)
     .required()
     .messages({
@@ -39,8 +39,8 @@ module.exports = (categories) => {
     }),
 
     title: Joi.string()
-    .min(Title.MIN_LENGTH)
-    .max(Title.MAX_LENGTH)
+    .min(Offer.MIN_TITLE_LENGTH)
+    .max(Offer.MAX_TITLE_LENGTH)
     .empty(``)
     .required()
     .messages({
@@ -52,7 +52,7 @@ module.exports = (categories) => {
     categories: Joi.array()
     .items(Joi.number()
     .valid(...categories))
-    .min(MIN_CATEGORIES_LENGTH)
+    .min(Offer.MIN_CATEGORIES_LENGTH)
     .required()
     .messages({
       'any.required': OfferMessage.REQUIRED.CATEGORIES,

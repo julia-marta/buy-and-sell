@@ -8,16 +8,15 @@ module.exports = (schema, logger, service) => (
     const {body} = req;
 
     let validSchema;
+    let allCategoriesIds;
 
     if (service) {
       try {
         const allCategories = await service.findAll();
-        const allCategoriesIds = allCategories.reduce((acc, item) => ([
+        allCategoriesIds = allCategories.reduce((acc, item) => ([
           item.id,
           ...acc
         ]), []);
-
-        validSchema = schema(allCategoriesIds);
       } catch (err) {
         logger.error(`Can't get valid schema.`);
         res.status(HttpCode.BAD_REQUEST).json({errorMessages: [`Something wrong`]});
@@ -25,9 +24,9 @@ module.exports = (schema, logger, service) => (
         return;
       }
 
-    } else {
-      validSchema = schema;
     }
+
+    validSchema = service ? schema(allCategoriesIds) : schema;
 
     try {
       await validSchema.validateAsync(body, {abortEarly: false});

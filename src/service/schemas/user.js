@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {UserMessage, MIN_PASSWORD_LENGTH} = require(`../../const`);
+const {UserMessage, User} = require(`../../const`);
 
 module.exports = Joi.object({
   firstname: Joi.string()
@@ -32,7 +32,7 @@ module.exports = Joi.object({
     }),
 
   password: Joi.string()
-    .min(MIN_PASSWORD_LENGTH)
+    .min(User.MIN_PASSWORD_LENGTH)
     .empty(``)
     .required()
     .messages({
@@ -42,7 +42,7 @@ module.exports = Joi.object({
 
   repeat: Joi.string()
     .valid(Joi.ref(`password`))
-    .min(MIN_PASSWORD_LENGTH)
+    .min(User.MIN_PASSWORD_LENGTH)
     .empty(``)
     .required()
     .messages({

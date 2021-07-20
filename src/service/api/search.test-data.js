@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.mockCategories = [
+const mockCategories = [
   `Журналы`,
   `Игры`,
   `Разное`,
@@ -11,7 +11,7 @@ module.exports.mockCategories = [
   `Книги`
 ];
 
-module.exports.mockOffers = [
+const mockOffers = [
   {
     type: `SALE`,
     title: `Куплю породистого кота.`,
@@ -52,7 +52,7 @@ module.exports.mockOffers = [
   }
 ];
 
-module.exports.mockUsers = [
+const mockUsers = [
   {
     firstname: `Иван`,
     lastname: `Иванов`,
@@ -69,7 +69,7 @@ module.exports.mockUsers = [
   },
 ];
 
-module.exports.mockComments = [
+const mockComments = [
   {
     text: `Неплохо, но дорого. Оплата наличными или перевод на карту? А сколько игр в комплекте?`,
     offerId: 1,
@@ -101,3 +101,5 @@ module.exports.mockComments = [
     userId: 2,
   }
 ];
+
+module.exports = {mockCategories, mockOffers, mockUsers, mockComments};

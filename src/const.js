@@ -1,14 +1,21 @@
 'use strict';
 
-module.exports.DEFAULT_COMMAND = `--help`;
-module.exports.USER_ARGV_INDEX = 2;
+const DEFAULT_COMMAND = `--help`;
+const USER_ARGV_INDEX = 2;
+const OFFERS_PER_PAGE = 8;
+const PAGER_WIDTH = 2;
+const MAX_ID_LENGTH = 6;
+const API_PREFIX = `/api`;
+const DEFAULT_IMAGE = `blank.png`;
 
-module.exports.ExitCode = {
+const IMAGE_TYPES = [`image/jpg`, `image/jpeg`, `image/png`];
+
+const ExitCode = {
   error: 1,
   success: 0,
 };
 
-module.exports.HttpCode = {
+const HttpCode = {
   OK: 200,
   CREATED: 201,
   NOT_FOUND: 404,
@@ -18,33 +25,29 @@ module.exports.HttpCode = {
   BAD_REQUEST: 400,
 };
 
-module.exports.MIN_PRICE = 100;
-
-module.exports.MIN_CATEGORIES_LENGTH = 1;
-
-module.exports.MIN_PASSWORD_LENGTH = 6;
-
-module.exports.Type = {
-  OFFER: `OFFER`,
-  SALE: `SALE`,
+const Offer = {
+  TYPE: {
+    OFFER: `OFFER`,
+    SALE: `SALE`,
+  },
+  MIN_TEXT_LENGTH: 50,
+  MAX_TEXT_LENGTH: 1000,
+  MIN_TITLE_LENGTH: 10,
+  MAX_TITLE_LENGTH: 100,
+  MIN_PRICE: 100,
+  MIN_CATEGORIES_LENGTH: 1
 };
 
-module.exports.Title = {
-  MIN_LENGTH: 10,
-  MAX_LENGTH: 100,
-};
-
-module.exports.Text = {
-  MIN_LENGTH: 50,
-  MAX_LENGTH: 1000,
-};
-
-module.exports.Comment = {
+const Comment = {
   MIN_LENGTH: 20,
   MAX_LENGTH: 1000,
 };
 
-module.exports.OfferMessage = {
+const User = {
+  MIN_PASSWORD_LENGTH: 6,
+};
+
+const OfferMessage = {
 
   REQUIRED: {
     TITLE: `Укажите название объявления`,
@@ -64,13 +67,13 @@ module.exports.OfferMessage = {
   MAX_TEXT_LENGTH: `Текст объявления должен быть не больше 1000 символов`,
 };
 
-module.exports.CommentMessage = {
+const CommentMessage = {
   REQUIRED: `Напишите что-нибудь`,
   MIN_TEXT_LENGTH: `Текст комментария должен быть не меньше 20 символов`,
   MAX_TEXT_LENGTH: `Текст объявления должен быть не больше 1000 символов`,
 };
 
-module.exports.UserMessage = {
+const UserMessage = {
 
   REQUIRED: {
     FIRSTNAME: `Укажите ваше имя`,
@@ -90,7 +93,7 @@ module.exports.UserMessage = {
   EMAIL_ALREADY_REGISTERED: `Пользователь с таким электронным адресом уже зарегистрирован`
 };
 
-module.exports.LoginMessage = {
+const LoginMessage = {
 
   REQUIRED: {
     EMAIL: `Укажите ваш e-mail`,
@@ -101,19 +104,28 @@ module.exports.LoginMessage = {
   WRONG_PASSWORD: `Неверный пароль`
 };
 
-module.exports.CategoryImageName = {
+const CategoryImageName = {
   MIN: 1,
   MAX: 6,
 };
 
-module.exports.OFFERS_PER_PAGE = 8;
-
-module.exports.PAGER_WIDTH = 2;
-
-module.exports.API_PREFIX = `/api`;
-
-module.exports.MAX_ID_LENGTH = 6;
-
-module.exports.IMAGE_TYPES = [`image/jpg`, `image/jpeg`, `image/png`];
-
-module.exports.DEFAULT_IMAGE = `blank.png`;
+module.exports = {
+  DEFAULT_COMMAND,
+  USER_ARGV_INDEX,
+  OFFERS_PER_PAGE,
+  PAGER_WIDTH,
+  MAX_ID_LENGTH,
+  API_PREFIX,
+  DEFAULT_IMAGE,
+  IMAGE_TYPES,
+  ExitCode,
+  HttpCode,
+  Offer,
+  Comment,
+  User,
+  OfferMessage,
+  CommentMessage,
+  UserMessage,
+  LoginMessage,
+  CategoryImageName
+};

@@ -15,11 +15,7 @@ module.exports = (serviceLocator) => {
     const {count = false} = req.query;
     let categories;
 
-    if (count) {
-      categories = await service.findAllWithCount();
-    } else {
-      categories = await service.findAll();
-    }
+    categories = count ? await service.findAllWithCount() : await service.findAll();
 
     return res.status(HttpCode.OK).json(categories);
   });

@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.mockCategories = [
+const mockCategories = [
   `Книги`,
   `Разное`,
   `Марки`,
@@ -11,7 +11,7 @@ module.exports.mockCategories = [
   `Игры`
 ];
 
-module.exports.mockOffers = [
+const mockOffers = [
   {
     type: `OFFER`,
     title: `Куплю антиквариат.`,
@@ -71,7 +71,7 @@ module.exports.mockOffers = [
   }
 ];
 
-module.exports.mockOffer = {
+const mockOffer = {
   categories: [1, 2],
   title: `Дам погладить котика`,
   description: `Дам погладить котика. Дам погладить котика. Дам погладить котика.`,
@@ -80,7 +80,7 @@ module.exports.mockOffer = {
   sum: 100500
 };
 
-module.exports.mockUsers = [
+const mockUsers = [
   {
     firstname: `Иван`,
     lastname: `Иванов`,
@@ -97,7 +97,7 @@ module.exports.mockUsers = [
   },
 ];
 
-module.exports.mockComments = [
+const mockComments = [
   {
     text: `Вы что?! В магазине дешевле. Оплата наличными или перевод на карту? Неплохо, но дорого.`,
     offerId: 1,
@@ -149,3 +149,5 @@ module.exports.mockComments = [
     userId: 1,
   }
 ];
+
+module.exports = {mockCategories, mockOffers, mockOffer, mockUsers, mockComments};

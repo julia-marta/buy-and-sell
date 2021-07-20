@@ -1,6 +1,7 @@
 'use strict';
 
 const axios = require(`axios`);
+const {API_PREFIX} = require(`../const`);
 
 const TIMEOUT = 1000;
 const DEFAULT_PORT = 3000;
@@ -8,7 +9,7 @@ const DEFAULT_HOST = `http://localhost`;
 
 const port = process.env.API_PORT || DEFAULT_PORT;
 const host = process.env.HOST || DEFAULT_HOST;
-const defaultURL = `${host}:${port}/api/`;
+const defaultURL = `${host}:${port}${API_PREFIX}/`;
 
 class API {
 
@@ -17,11 +18,6 @@ class API {
       baseURL,
       timeout
     });
-  }
-
-  async _load(url, options) {
-    const response = await this._http.request({url, ...options});
-    return response.data;
   }
 
   getOffers() {
@@ -109,6 +105,11 @@ class API {
       method: `POST`,
       data
     });
+  }
+
+  async _load(url, options) {
+    const response = await this._http.request({url, ...options});
+    return response.data;
   }
 }
 
